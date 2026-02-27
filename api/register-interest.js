@@ -1,4 +1,4 @@
-export const config = { runtime: 'edge' };
+// Runs as standard Node.js serverless (convex/browser is not Edge-compatible)
 
 import { ConvexHttpClient } from 'convex/browser';
 import { getCorsHeaders, isDisallowedOrigin } from './_cors.js';
