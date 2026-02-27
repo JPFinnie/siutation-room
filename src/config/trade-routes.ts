@@ -1,4 +1,3 @@
-import { PORTS } from './ports';
 import { STRATEGIC_WATERWAYS } from './geo';
 
 export type TradeRouteCategory = 'container' | 'energy' | 'bulk';
@@ -220,55 +219,11 @@ export const TRADE_ROUTES: TradeRoute[] = [
   },
 ];
 
+// Port coordinate data removed — segment resolution requires port positions.
+// Returns empty until a port data source is restored.
 export function resolveTradeRouteSegments(): TradeRouteSegment[] {
-  const portMap = new Map<string, [number, number]>();
-  for (const p of PORTS) portMap.set(p.id, [p.lon, p.lat]);
-
-  const waterwayMap = new Map<string, [number, number]>();
-  for (const w of STRATEGIC_WATERWAYS) waterwayMap.set(w.id, [w.lon, w.lat]);
-
-  const segments: TradeRouteSegment[] = [];
-
-  for (const route of TRADE_ROUTES) {
-    const fromCoord = portMap.get(route.from);
-    const toCoord = portMap.get(route.to);
-    if (!fromCoord || !toCoord) {
-      if (import.meta.env.DEV) console.error(`[trade-routes] Missing port: ${!fromCoord ? route.from : route.to}`);
-      continue;
-    }
-
-    const waypointCoords: [number, number][] = [];
-    let valid = true;
-    for (const wpId of route.waypoints) {
-      const coord = waterwayMap.get(wpId);
-      if (!coord) {
-        if (import.meta.env.DEV) console.error(`[trade-routes] Missing waterway: ${wpId}`);
-        valid = false;
-        break;
-      }
-      waypointCoords.push(coord);
-    }
-    if (!valid) continue;
-
-    const chain: [number, number][] = [fromCoord, ...waypointCoords, toCoord];
-    const totalSegments = chain.length - 1;
-
-    for (let i = 0; i < totalSegments; i++) {
-      segments.push({
-        routeId: route.id,
-        routeName: route.name,
-        category: route.category,
-        status: route.status,
-        volumeDesc: route.volumeDesc,
-        sourcePosition: chain[i]!,
-        targetPosition: chain[i + 1]!,
-        segmentIndex: i,
-        totalSegments,
-      });
-    }
-  }
-
-  return segments;
+  void STRATEGIC_WATERWAYS; // retain import for future use
+  return [];
 }
 
 let validRouteIds: Set<string> | null = null;

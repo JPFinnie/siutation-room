@@ -2,44 +2,17 @@ import { getApiBaseUrl, isDesktopRuntime } from './runtime';
 import { invokeTauri } from './tauri-bridge';
 
 export type RuntimeSecretKey =
-  | 'GROQ_API_KEY'
-  | 'OPENROUTER_API_KEY'
   | 'FRED_API_KEY'
   | 'EIA_API_KEY'
-  | 'CLOUDFLARE_API_TOKEN'
-  | 'ACLED_ACCESS_TOKEN'
-  | 'URLHAUS_AUTH_KEY'
-  | 'OTX_API_KEY'
-  | 'ABUSEIPDB_API_KEY'
-  | 'WINGBITS_API_KEY'
-  | 'WS_RELAY_URL'
-  | 'VITE_OPENSKY_RELAY_URL'
-  | 'OPENSKY_CLIENT_ID'
-  | 'OPENSKY_CLIENT_SECRET'
-  | 'AISSTREAM_API_KEY'
   | 'FINNHUB_API_KEY'
-  | 'NASA_FIRMS_API_KEY'
-  | 'UC_DP_KEY'
   | 'OLLAMA_API_URL'
   | 'OLLAMA_MODEL'
-  | 'WORLDMONITOR_API_KEY'
   | 'WTO_API_KEY';
 
 export type RuntimeFeatureId =
-  | 'aiGroq'
-  | 'aiOpenRouter'
   | 'economicFred'
   | 'energyEia'
-  | 'internetOutages'
-  | 'acledConflicts'
-  | 'abuseChThreatIntel'
-  | 'alienvaultOtxThreatIntel'
-  | 'abuseIpdbThreatIntel'
-  | 'wingbitsEnrichment'
-  | 'aisRelay'
-  | 'openskyRelay'
   | 'finnhubMarkets'
-  | 'nasaFirms'
   | 'aiOllama'
   | 'wtoTrade'
   | 'supplyChain';
@@ -72,20 +45,9 @@ function getSidecarSecretValidateUrl(): string {
 }
 
 const defaultToggles: Record<RuntimeFeatureId, boolean> = {
-  aiGroq: true,
-  aiOpenRouter: true,
   economicFred: true,
   energyEia: true,
-  internetOutages: true,
-  acledConflicts: true,
-  abuseChThreatIntel: true,
-  alienvaultOtxThreatIntel: true,
-  abuseIpdbThreatIntel: true,
-  wingbitsEnrichment: true,
-  aisRelay: true,
-  openskyRelay: true,
   finnhubMarkets: true,
-  nasaFirms: true,
   aiOllama: true,
   wtoTrade: true,
   supplyChain: true,
@@ -95,23 +57,9 @@ export const RUNTIME_FEATURES: RuntimeFeatureDefinition[] = [
   {
     id: 'aiOllama',
     name: 'Ollama local summarization',
-    description: 'Local LLM provider via OpenAI-compatible endpoint (Ollama or LM Studio, desktop-first).',
+    description: 'Local LLM provider via OpenAI-compatible endpoint (Ollama).',
     requiredSecrets: ['OLLAMA_API_URL', 'OLLAMA_MODEL'],
-    fallback: 'Falls back to Groq, then OpenRouter, then local browser model.',
-  },
-  {
-    id: 'aiGroq',
-    name: 'Groq summarization',
-    description: 'Primary fast LLM provider used for AI summary generation.',
-    requiredSecrets: ['GROQ_API_KEY'],
-    fallback: 'Falls back to OpenRouter, then local browser model.',
-  },
-  {
-    id: 'aiOpenRouter',
-    name: 'OpenRouter summarization',
-    description: 'Secondary LLM provider for AI summary fallback.',
-    requiredSecrets: ['OPENROUTER_API_KEY'],
-    fallback: 'Falls back to local browser model only.',
+    fallback: 'AI summaries unavailable without Ollama.',
   },
   {
     id: 'economicFred',
@@ -128,76 +76,11 @@ export const RUNTIME_FEATURES: RuntimeFeatureDefinition[] = [
     fallback: 'Oil analytics cards show disabled state.',
   },
   {
-    id: 'internetOutages',
-    name: 'Cloudflare outage radar',
-    description: 'Internet outages from Cloudflare Radar annotations API.',
-    requiredSecrets: ['CLOUDFLARE_API_TOKEN'],
-    fallback: 'Outage layer is disabled and map continues with other feeds.',
-  },
-  {
-    id: 'acledConflicts',
-    name: 'ACLED conflicts & protests',
-    description: 'Conflict and protest event feeds from ACLED.',
-    requiredSecrets: ['ACLED_ACCESS_TOKEN'],
-    fallback: 'Conflict/protest overlays are hidden.',
-  },
-  {
-    id: 'abuseChThreatIntel',
-    name: 'abuse.ch cyber IOC feeds',
-    description: 'URLhaus and ThreatFox IOC ingestion for the cyber threat layer.',
-    requiredSecrets: ['URLHAUS_AUTH_KEY'],
-    fallback: 'URLhaus/ThreatFox IOC ingestion is disabled.',
-  },
-  {
-    id: 'alienvaultOtxThreatIntel',
-    name: 'AlienVault OTX threat intel',
-    description: 'Optional OTX IOC ingestion for cyber threat enrichment.',
-    requiredSecrets: ['OTX_API_KEY'],
-    fallback: 'OTX IOC enrichment is disabled.',
-  },
-  {
-    id: 'abuseIpdbThreatIntel',
-    name: 'AbuseIPDB threat intel',
-    description: 'Optional AbuseIPDB IOC/reputation enrichment for the cyber threat layer.',
-    requiredSecrets: ['ABUSEIPDB_API_KEY'],
-    fallback: 'AbuseIPDB enrichment is disabled.',
-  },
-  {
-    id: 'wingbitsEnrichment',
-    name: 'Wingbits aircraft enrichment',
-    description: 'Military flight operator/aircraft enrichment metadata.',
-    requiredSecrets: ['WINGBITS_API_KEY'],
-    fallback: 'Flight map still renders with heuristic-only classification.',
-  },
-  {
-    id: 'aisRelay',
-    name: 'AIS vessel tracking',
-    description: 'Live vessel ingestion via AISStream WebSocket.',
-    requiredSecrets: ['WS_RELAY_URL', 'AISSTREAM_API_KEY'],
-    desktopRequiredSecrets: ['AISSTREAM_API_KEY'],
-    fallback: 'AIS layer is disabled.',
-  },
-  {
-    id: 'openskyRelay',
-    name: 'OpenSky military flights',
-    description: 'OpenSky OAuth credentials for military flight data.',
-    requiredSecrets: ['VITE_OPENSKY_RELAY_URL', 'OPENSKY_CLIENT_ID', 'OPENSKY_CLIENT_SECRET'],
-    desktopRequiredSecrets: ['OPENSKY_CLIENT_ID', 'OPENSKY_CLIENT_SECRET'],
-    fallback: 'Military flights fall back to limited/no data.',
-  },
-  {
     id: 'finnhubMarkets',
     name: 'Finnhub market data',
     description: 'Real-time stock quotes and market data from Finnhub.',
     requiredSecrets: ['FINNHUB_API_KEY'],
-    fallback: 'Stock ticker uses limited free data.',
-  },
-  {
-    id: 'nasaFirms',
-    name: 'NASA FIRMS fire data',
-    description: 'Fire Information for Resource Management System satellite data.',
-    requiredSecrets: ['NASA_FIRMS_API_KEY'],
-    fallback: 'FIRMS fire layer uses public VIIRS feed.',
+    fallback: 'Stock ticker uses Yahoo Finance fallback.',
   },
   {
     id: 'wtoTrade',
@@ -232,8 +115,6 @@ function readStoredToggles(): Record<RuntimeFeatureId, boolean> {
 }
 
 const URL_SECRET_KEYS = new Set<RuntimeSecretKey>([
-  'WS_RELAY_URL',
-  'VITE_OPENSKY_RELAY_URL',
   'OLLAMA_API_URL',
 ]);
 
@@ -262,11 +143,6 @@ export function validateSecret(key: RuntimeSecretKey, value: string): { valid: b
     } catch {
       return { valid: false, hint: 'Must be a valid URL' };
     }
-  }
-
-  if (key === 'WORLDMONITOR_API_KEY') {
-    if (trimmed.length < 16) return { valid: false, hint: 'API key must be at least 16 characters' };
-    return { valid: true };
   }
 
   return { valid: true };

@@ -1003,8 +1003,6 @@ export interface CascadeResult {
   }[];
 }
 
-// Re-export port types
-export type { Port, PortType } from '@/config/ports';
 
 // AI Regulation Types
 export type RegulationType = 'comprehensive' | 'sectoral' | 'voluntary' | 'proposed';
@@ -1247,7 +1245,7 @@ export interface MapTechHQCluster {
   lat: number;
   lon: number;
   count: number;
-  items: import('@/config/tech-geo').TechHQ[];
+  items: { id: string; company: string; city: string; country: string; lat: number; lon: number; type: 'faang' | 'unicorn' | 'public'; employees?: number; marketCap?: string }[];
   city: string;
   country: string;
   primaryType: 'faang' | 'unicorn' | 'public';

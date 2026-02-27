@@ -3,8 +3,6 @@ import type { PanelConfig, MapLayers } from '@/types';
 
 // Shared exports (re-exported by all variants)
 export { SECTORS, COMMODITIES, MARKET_SYMBOLS } from '../markets';
-export { UNDERSEA_CABLES } from '../geo';
-export { AI_DATA_CENTERS } from '../ai-datacenters';
 
 // Refresh intervals - shared across all variants
 export const REFRESH_INTERVALS = {

@@ -15,7 +15,7 @@ import {
 } from '@/generated/client/worldmonitor/infrastructure/v1/service_client';
 import type { InternetOutage } from '@/types';
 import { createCircuitBreaker } from '@/utils';
-import { isFeatureAvailable } from '../runtime-config';
+
 
 // ---- Client + Circuit Breakers ----
 
@@ -75,10 +75,9 @@ export function isOutagesConfigured(): boolean | null {
 }
 
 export async function fetchInternetOutages(): Promise<InternetOutage[]> {
-  if (!isFeatureAvailable('internetOutages')) {
-    outagesConfigured = false;
-    return [];
-  }
+  // internetOutages feature removed -- permanently disabled
+  outagesConfigured = false;
+  return [];
 
   const resp = await outageBreaker.execute(async () => {
     return client.listInternetOutages({

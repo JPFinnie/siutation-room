@@ -7,7 +7,7 @@ import {
 import { createCircuitBreaker } from '@/utils';
 import type { AisDisruptionEvent, AisDensityZone, AisDisruptionType } from '@/types';
 import { dataFreshness } from '../data-freshness';
-import { isFeatureAvailable } from '../runtime-config';
+
 
 // ---- Proto fallback (desktop safety when relay URL is unavailable) ----
 
@@ -62,7 +62,7 @@ const isClientRuntime = typeof window !== 'undefined';
 const aisConfigured = isClientRuntime && import.meta.env.VITE_ENABLE_AIS !== 'false';
 
 export function isAisConfigured(): boolean {
-  return aisConfigured && isFeatureAvailable('aisRelay');
+  return aisConfigured && false /* aisRelay feature removed */;
 }
 
 // ---- AisPositionData (exported for military-vessels.ts) ----

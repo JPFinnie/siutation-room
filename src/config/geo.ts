@@ -1,5 +1,4 @@
 import type { Hotspot, ConflictZone, MilitaryBase, UnderseaCable, NuclearFacility, StrategicWaterway, APTGroup, EconomicCenter, Spaceport, CriticalMineralProject } from '@/types';
-import { MILITARY_BASES_EXPANDED } from './bases-expanded';
 
 // Hotspot levels are NOT hardcoded - they are dynamically calculated based on news activity
 // All hotspots start at 'low' and rise to 'elevated' or 'high' based on matching news items
@@ -610,32 +609,7 @@ const US_DOMESTIC_BASES: MilitaryBase[] = [
   { id: 'murmansk', name: 'Murmansk', lat: 68.97, lon: 33.09, type: 'russia', description: 'Northern Fleet. Strategic nuclear submarines.' },
 ];
 
-// Merge expanded bases with domestic bases, deduplicating by proximity
-function mergeAndDeduplicateBases(): MilitaryBase[] {
-  const allBases = [...MILITARY_BASES_EXPANDED];
-  const usedCoords = new Set<string>();
-
-  // Index expanded bases by approximate location
-  for (const base of MILITARY_BASES_EXPANDED) {
-    const key = `${Math.round(base.lat * 10)}_${Math.round(base.lon * 10)}`;
-    usedCoords.add(key);
-  }
-
-  // Add domestic bases if not already present (by location proximity)
-  for (const base of US_DOMESTIC_BASES) {
-    const key = `${Math.round(base.lat * 10)}_${Math.round(base.lon * 10)}`;
-    if (!usedCoords.has(key)) {
-      allBases.push(base);
-      usedCoords.add(key);
-    }
-  }
-
-  return allBases;
-}
-
-// Combined military bases: 210 from ASIAR dataset + unique domestic bases
-// Total: ~220 bases from 9 operators (US-NATO, UK, France, Russia, China, India, Italy, UAE, Japan)
-export const MILITARY_BASES: MilitaryBase[] = mergeAndDeduplicateBases();
+export const MILITARY_BASES: MilitaryBase[] = US_DOMESTIC_BASES;
 
 export const UNDERSEA_CABLES: UnderseaCable[] = [
   // === TRANS-ATLANTIC (3 - south/central/north routes) ===

@@ -1,14 +1,14 @@
 import { Panel } from './Panel';
 import type { AIRegulation, RegulatoryAction, CountryRegulationProfile } from '@/types';
-import {
-  AI_REGULATIONS,
-  COUNTRY_REGULATION_PROFILES,
-  getUpcomingDeadlines,
-  getRecentActions,
-} from '@/config';
 import { escapeHtml, sanitizeUrl } from '@/utils/sanitize';
 import { t } from '@/services/i18n';
 import { getCSSColor } from '@/utils';
+
+// AI-regulations config has been removed; provide empty stubs so the panel renders empty state.
+const AI_REGULATIONS: AIRegulation[] = [];
+const COUNTRY_REGULATION_PROFILES: CountryRegulationProfile[] = [];
+function getUpcomingDeadlines(): AIRegulation[] { return []; }
+function getRecentActions(_months?: number): RegulatoryAction[] { return []; }
 
 export class RegulationPanel extends Panel {
   private viewMode: 'timeline' | 'deadlines' | 'regulations' | 'countries' = 'timeline';

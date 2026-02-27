@@ -8,10 +8,21 @@ import type {
   UnderseaCable,
   Pipeline,
 } from '@/types';
-import type { Port } from '@/config/ports';
 import { UNDERSEA_CABLES, STRATEGIC_WATERWAYS } from '@/config/geo';
 import { PIPELINES } from '@/config/pipelines';
-import { PORTS } from '@/config/ports';
+
+// Port type stub -- @/config/ports was removed during finance-only migration
+interface Port {
+  id: string;
+  name: string;
+  country: string;
+  lat: number;
+  lon: number;
+  type: string;
+  rank?: number;
+}
+
+const PORTS: Port[] = [];
 
 // Country name lookup
 const COUNTRY_NAMES: Record<string, string> = {

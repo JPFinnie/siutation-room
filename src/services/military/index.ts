@@ -6,8 +6,7 @@
  * Server-side theater posture is consolidated in the handler.
  */
 
-// Military flights (client-side OpenSky/Wingbits tracking)
-export * from '../military-flights';
+// Military flights -- removed during finance-only migration
 
 // Military vessels (client-side AIS tracking)
 export * from '../military-vessels';

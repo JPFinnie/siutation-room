@@ -8,7 +8,7 @@
 
 import { createCircuitBreaker } from '@/utils';
 import { dataFreshness } from './data-freshness';
-import { isFeatureAvailable } from './runtime-config';
+
 import {
   MilitaryServiceClient,
   type AircraftDetails,
@@ -186,7 +186,7 @@ function createNegativeDetailsEntry(icao24: string): WingbitsAircraftDetails {
  * Check if Wingbits API is configured
  */
 export async function checkWingbitsStatus(): Promise<boolean> {
-  if (!isFeatureAvailable('wingbitsEnrichment')) return false;
+  if (!false /* wingbitsEnrichment feature removed */) return false;
   if (wingbitsConfigured !== null) return wingbitsConfigured;
 
   try {
@@ -206,7 +206,7 @@ export async function checkWingbitsStatus(): Promise<boolean> {
  * Fetch aircraft details from Wingbits
  */
 export async function getAircraftDetails(icao24: string): Promise<WingbitsAircraftDetails | null> {
-  if (!isFeatureAvailable('wingbitsEnrichment')) return null;
+  if (!false /* wingbitsEnrichment feature removed */) return null;
   const key = icao24.toLowerCase();
 
   // Check local cache first
@@ -240,7 +240,7 @@ export async function getAircraftDetails(icao24: string): Promise<WingbitsAircra
  * Batch fetch aircraft details
  */
 export async function getAircraftDetailsBatch(icao24List: string[]): Promise<Map<string, WingbitsAircraftDetails>> {
-  if (!isFeatureAvailable('wingbitsEnrichment')) return new Map();
+  if (!false /* wingbitsEnrichment feature removed */) return new Map();
   const results = new Map<string, WingbitsAircraftDetails>();
   const toFetch: string[] = [];
   const requestedKeys = Array.from(new Set(icao24List.map((icao24) => icao24.toLowerCase()))).sort();

@@ -59,8 +59,8 @@ export class StatusPanel extends Panel {
   }
 
   private init(): void {
-    this.allowedFeeds = SITE_VARIANT === 'tech' ? TECH_FEEDS : WORLD_FEEDS;
-    this.allowedApis = SITE_VARIANT === 'tech' ? TECH_APIS : WORLD_APIS;
+    this.allowedFeeds = (SITE_VARIANT as string) === 'tech' ? TECH_FEEDS : WORLD_FEEDS;
+    this.allowedApis = (SITE_VARIANT as string) === 'tech' ? TECH_APIS : WORLD_APIS;
 
     const panel = h('div', { className: 'status-panel hidden' },
       h('div', { className: 'status-panel-header' },

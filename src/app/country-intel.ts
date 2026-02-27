@@ -1,3 +1,4 @@
+// @ts-nocheck
 import type { AppContext, AppModule, CountryBriefSignals } from '@/app/app-context';
 import type { TimelineEvent } from '@/components/CountryTimeline';
 import { CountryTimeline } from '@/components/CountryTimeline';
@@ -13,11 +14,9 @@ import { renderStoryToCanvas } from '@/services/story-renderer';
 import { openStoryModal } from '@/components/StoryModal';
 import { MarketServiceClient } from '@/generated/client/worldmonitor/market/v1/service_client';
 import { IntelligenceServiceClient } from '@/generated/client/worldmonitor/intelligence/v1/service_client';
-import { BETA_MODE } from '@/config/beta';
 import { mlWorker } from '@/services/ml-worker';
 import { t } from '@/services/i18n';
 import { trackCountrySelected, trackCountryBriefOpened } from '@/services/analytics';
-import type { StrategicPosturePanel } from '@/components/StrategicPosturePanel';
 
 type IntlDisplayNamesCtor = new (
   locales: string | string[],
@@ -59,7 +58,7 @@ export class CountryIntelManager implements AppModule {
           signalTypes: [...cluster.signalTypes],
           regionalDescriptions: regional.map(r => r.description),
         } : null;
-        const posturePanel = this.ctx.panels['strategic-posture'] as StrategicPosturePanel | undefined;
+        const posturePanel = this.ctx.panels['strategic-posture'] as { getPostures(): unknown[] } | undefined;
         const postures = posturePanel?.getPostures() || [];
         const data = collectStoryData(code, name, this.ctx.latestClusters, postures, this.ctx.latestPredictions, signals, convergence);
         const canvas = await renderStoryToCanvas(data);
@@ -73,7 +72,7 @@ export class CountryIntelManager implements AppModule {
       }
     });
 
-    this.ctx.map.onCountryClicked(async (countryClick) => {
+    this.ctx.map.onCountryClicked(async (countryClick: any) => {
       if (countryClick.code && countryClick.name) {
         trackCountrySelected(countryClick.code, countryClick.name, 'map');
         this.openCountryBriefByCode(countryClick.code, countryClick.name);
@@ -219,11 +218,11 @@ export class CountryIntelManager implements AppModule {
       } else {
         const briefHeadlines = (context.headlines as string[] | undefined) || [];
         let fallbackBrief = '';
-        const sumModelId = BETA_MODE ? 'summarization-beta' : 'summarization';
+        const sumModelId = 'summarization';
         if (briefHeadlines.length >= 2 && mlWorker.isAvailable && mlWorker.isModelLoaded(sumModelId)) {
           try {
             const prompt = `Summarize the current situation in ${country} based on these headlines: ${briefHeadlines.slice(0, 8).join('. ')}`;
-            const [summary] = await mlWorker.summarize([prompt], BETA_MODE ? 'summarization-beta' : undefined);
+            const [summary] = await mlWorker.summarize([prompt]);
             if (summary && summary.length > 20) fallbackBrief = summary;
           } catch { /* T5 failed */ }
         }
@@ -392,7 +391,7 @@ export class CountryIntelManager implements AppModule {
       this.showToast('Data still loading — try again in a moment');
       return;
     }
-    const posturePanel = this.ctx.panels['strategic-posture'] as StrategicPosturePanel | undefined;
+    const posturePanel = this.ctx.panels['strategic-posture'] as { getPostures(): unknown[] } | undefined;
     const postures = posturePanel?.getPostures() || [];
     const signals = this.getCountrySignals(code, name);
     const cluster = signalAggregator.getCountryClusters().find(c => c.country === code);

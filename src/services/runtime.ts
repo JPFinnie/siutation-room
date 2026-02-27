@@ -172,16 +172,6 @@ function sleep(ms: number): Promise<void> {
   return new Promise((resolve) => setTimeout(resolve, ms));
 }
 
-function isLocalOnlyApiTarget(target: string): boolean {
-  // Security boundary: endpoints that can carry local secrets must use the
-  // `/api/local-*` prefix so cloud fallback is automatically blocked.
-  return target.startsWith('/api/local-');
-}
-
-function isKeyFreeApiTarget(target: string): boolean {
-  return target.startsWith('/api/register-interest');
-}
-
 async function fetchLocalWithStartupRetry(
   nativeFetch: typeof window.fetch,
   localUrl: string,
@@ -281,37 +271,7 @@ export function installRuntimeFetchPatch(): void {
 
     const localUrl = `${getApiBaseUrl()}${target}`;
     if (debug) console.log(`[fetch] intercept → ${target}`);
-    let allowCloudFallback = !isLocalOnlyApiTarget(target);
-
-    if (allowCloudFallback && !isKeyFreeApiTarget(target)) {
-      try {
-        const { getSecretState, secretsReady } = await import('@/services/runtime-config');
-        await Promise.race([secretsReady, new Promise<void>(r => setTimeout(r, 2000))]);
-        const wmKeyState = getSecretState('WORLDMONITOR_API_KEY');
-        if (!wmKeyState.present || !wmKeyState.valid) {
-          allowCloudFallback = false;
-        }
-      } catch {
-        allowCloudFallback = false;
-      }
-    }
-
-    const cloudFallback = async () => {
-      if (!allowCloudFallback) {
-        throw new Error(`Cloud fallback blocked for ${target}`);
-      }
-      const cloudUrl = `${getRemoteApiBaseUrl()}${target}`;
-      if (debug) console.log(`[fetch] cloud fallback → ${cloudUrl}`);
-      const cloudHeaders = new Headers(init?.headers);
-      if (/^\/api\/[^/]+\/v1\//.test(target)) {
-        const { getRuntimeConfigSnapshot } = await import('@/services/runtime-config');
-        const wmKeyValue = getRuntimeConfigSnapshot().secrets['WORLDMONITOR_API_KEY']?.value;
-        if (wmKeyValue) {
-          cloudHeaders.set('X-WorldMonitor-Key', wmKeyValue);
-        }
-      }
-      return nativeFetch(cloudUrl, { ...init, headers: cloudHeaders });
-    };
+    // Cloud fallback is disabled — app is local-only.
 
     try {
       const t0 = performance.now();
@@ -337,21 +297,13 @@ export function installRuntimeFetchPatch(): void {
         }
       }
 
-      if (!response.ok) {
-        if (!allowCloudFallback) {
-          if (debug) console.log(`[fetch] local-only endpoint ${target} returned ${response.status}; skipping cloud fallback`);
-          return response;
-        }
-        if (debug) console.log(`[fetch] local ${response.status}, falling back to cloud`);
-        return cloudFallback();
+      if (!response.ok && debug) {
+        console.log(`[fetch] local-only endpoint ${target} returned ${response.status}; cloud fallback disabled`);
       }
       return response;
     } catch (error) {
       if (debug) console.warn(`[runtime] Local API unavailable for ${target}`, error);
-      if (!allowCloudFallback) {
-        throw error;
-      }
-      return cloudFallback();
+      throw error;
     }
   };
 

@@ -1,19 +1,18 @@
 import type { MilitaryVessel, MilitaryVesselCluster, MilitaryVesselType, MilitaryOperator } from '@/types';
 import { createCircuitBreaker } from '@/utils';
 import {
-  KNOWN_NAVAL_VESSELS,
-  MILITARY_VESSEL_PATTERNS,
-  getNearbyHotspot,
-  MILITARY_HOTSPOTS,
-} from '@/config/military';
-import {
   registerAisCallback,
   unregisterAisCallback,
   isAisConfigured,
   initAisStream,
   type AisPositionData,
 } from './maritime';
-import { fetchUSNIFleetReport, mergeUSNIWithAIS } from './usni-fleet';
+
+// Stubs for deleted @/config/military
+const KNOWN_NAVAL_VESSELS: { name: string; hullNumber?: string; operator: MilitaryOperator; country: string; vesselType: MilitaryVesselType }[] = [];
+const MILITARY_VESSEL_PATTERNS: { mmsiPrefix?: string; country: string }[] = [];
+const MILITARY_HOTSPOTS: { name: string; lat: number; lon: number; radius: number; priority?: string }[] = [];
+function getNearbyHotspot(_lat: number, _lon: number): { priority?: string } | null { return null; }
 
 // Cache for API responses
 let vesselCache: { data: MilitaryVessel[]; timestamp: number } | null = null;
@@ -583,18 +582,7 @@ export async function fetchMilitaryVessels(): Promise<{
     // Generate AIS-only clusters
     const aisClusters = clusterVessels(vessels);
 
-    // Merge with USNI Fleet Tracker data (non-blocking)
-    try {
-      const usniReport = await fetchUSNIFleetReport();
-      if (usniReport && usniReport.vessels.length > 0) {
-        const merged = mergeUSNIWithAIS(vessels, usniReport, aisClusters);
-        console.log(`[Military Vessels] USNI merge: ${vessels.length} AIS + ${usniReport.vessels.length} USNI → ${merged.vessels.length} total`);
-        return merged;
-      }
-    } catch (e) {
-      console.warn('[Military Vessels] USNI merge failed, using AIS only:', (e as Error).message);
-    }
-
+    // USNI Fleet Tracker removed during finance-only migration
     return { vessels, clusters: aisClusters };
   }, { vessels: [], clusters: [] });
 }

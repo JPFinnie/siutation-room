@@ -3,7 +3,7 @@ import { fetchLiveVideoId } from '@/services/live-news';
 import { isDesktopRuntime, getRemoteApiBaseUrl, getApiBaseUrl } from '@/services/runtime';
 import { t } from '../services/i18n';
 import { loadFromStorage, saveToStorage } from '@/utils';
-import { STORAGE_KEYS, SITE_VARIANT } from '@/config';
+import { SITE_VARIANT } from '@/config';
 import { getStreamQuality } from '@/services/ai-flow-settings';
 
 // YouTube IFrame Player API types
@@ -136,7 +136,7 @@ export const OPTIONAL_CHANNEL_REGIONS: { key: string; labelKey: string; channelI
   { key: 'africa', labelKey: 'components.liveNews.regionAfrica', channelIds: ['africanews', 'channels-tv', 'ktn-news', 'enca', 'sabc-news'] },
 ];
 
-const DEFAULT_LIVE_CHANNELS = SITE_VARIANT === 'tech' ? TECH_LIVE_CHANNELS : SITE_VARIANT === 'happy' ? [] : FULL_LIVE_CHANNELS;
+const DEFAULT_LIVE_CHANNELS = (SITE_VARIANT as string) === 'tech' ? TECH_LIVE_CHANNELS : (SITE_VARIANT as string) === 'happy' ? [] : FULL_LIVE_CHANNELS;
 
 /** Default channel list for the current variant (for restore in channel management). */
 export function getDefaultLiveChannels(): LiveChannel[] {
@@ -161,7 +161,7 @@ export const BUILTIN_IDS = new Set([
 ]);
 
 export function loadChannelsFromStorage(): LiveChannel[] {
-  const stored = loadFromStorage<StoredLiveChannels>(STORAGE_KEYS.liveChannels, DEFAULT_STORED);
+  const stored = loadFromStorage<StoredLiveChannels>('worldmonitor-live-channels', DEFAULT_STORED);
   const order = stored.order?.length ? stored.order : DEFAULT_STORED.order;
   const channelMap = new Map<string, LiveChannel>();
   for (const c of FULL_LIVE_CHANNELS) channelMap.set(c.id, { ...c });
@@ -194,7 +194,7 @@ export function saveChannelsToStorage(channels: LiveChannel[]): void {
       displayNameOverrides[c.id] = c.name;
     }
   }
-  saveToStorage(STORAGE_KEYS.liveChannels, { order, custom, displayNameOverrides });
+  saveToStorage('worldmonitor-live-channels', { order, custom, displayNameOverrides });
 }
 
 export class LiveNewsPanel extends Panel {
@@ -357,7 +357,7 @@ export class LiveNewsPanel extends Panel {
   }
 
   private static resolveYouTubeOrigin(): string | null {
-    const fallbackOrigin = SITE_VARIANT === 'tech'
+    const fallbackOrigin = (SITE_VARIANT as string) === 'tech'
       ? 'https://worldmonitor.app'
       : 'https://worldmonitor.app';
 

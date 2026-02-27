@@ -7,9 +7,7 @@ import type { PredictionMarket } from '@/services/prediction';
 import type { AssetType } from '@/types';
 import type { CountryBriefSignals } from '@/app/app-context';
 import type { StockIndexData } from '@/components/CountryIntelModal';
-import { getNearbyInfrastructure, haversineDistanceKm } from '@/services/related-assets';
-import { PORTS } from '@/config/ports';
-import type { Port } from '@/config/ports';
+import { getNearbyInfrastructure } from '@/services/related-assets';
 import { exportCountryBriefJSON, exportCountryBriefCSV } from '@/utils/export';
 import type { CountryBriefExport } from '@/utils/export';
 
@@ -502,20 +500,12 @@ export class CountryBriefPage {
 
     const assets = getNearbyInfrastructure(centroidLat, centroidLon, ['pipeline', 'cable', 'datacenter', 'base', 'nuclear']);
 
-    const nearbyPorts = PORTS
-      .map((p: Port) => ({ port: p, dist: haversineDistanceKm(centroidLat, centroidLon, p.lat, p.lon) }))
-      .filter(({ dist }) => dist <= 600)
-      .sort((a, b) => a.dist - b.dist)
-      .slice(0, 5);
-
+    // Ports config has been removed; port data is no longer available.
     const grouped = new Map<BriefAssetType, Array<{ name: string; distanceKm: number }>>();
     for (const a of assets) {
       const list = grouped.get(a.type) || [];
       list.push({ name: a.name, distanceKm: a.distanceKm });
       grouped.set(a.type, list);
-    }
-    if (nearbyPorts.length > 0) {
-      grouped.set('port', nearbyPorts.map(({ port, dist }) => ({ name: port.name, distanceKm: dist })));
     }
 
     if (grouped.size === 0) return;

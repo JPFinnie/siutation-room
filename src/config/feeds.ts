@@ -1,5 +1,4 @@
 import type { Feed } from '@/types';
-import { SITE_VARIANT } from './variant';
 
 // Helper to create RSS proxy URL (Vercel)
 const rss = (url: string) => `/api/rss-proxy?url=${encodeURIComponent(url)}`;
@@ -433,7 +432,8 @@ export function isStateAffiliatedSource(sourceName: string): boolean {
   return !!profile?.stateAffiliated;
 }
 
-const FULL_FEEDS: Record<string, Feed[]> = {
+
+export const FULL_FEEDS: Record<string, Feed[]> = {
   politics: [
     { name: 'BBC World', url: rss('https://feeds.bbci.co.uk/news/world/rss.xml') },
     { name: 'Guardian World', url: rss('https://www.theguardian.com/world/rss') },
@@ -674,8 +674,8 @@ const FULL_FEEDS: Record<string, Feed[]> = {
   ],
 };
 
-// Tech/AI variant feeds
-const TECH_FEEDS: Record<string, Feed[]> = {
+
+export const TECH_FEEDS: Record<string, Feed[]> = {
   tech: [
     { name: 'TechCrunch', url: rss('https://techcrunch.com/feed/') },
     { name: 'The Verge', url: rss('https://www.theverge.com/rss/index.xml') },
@@ -986,7 +986,7 @@ const FINANCE_FEEDS: Record<string, Feed[]> = {
   ],
 };
 
-const HAPPY_FEEDS: Record<string, Feed[]> = {
+export const HAPPY_FEEDS: Record<string, Feed[]> = {
   positive: [
     { name: 'Good News Network', url: rss('https://www.goodnewsnetwork.org/feed/') },
     { name: 'Positive.News', url: rss('https://www.positive.news/feed/') },
@@ -1021,13 +1021,7 @@ const HAPPY_FEEDS: Record<string, Feed[]> = {
 };
 
 // Variant-aware exports
-export const FEEDS = SITE_VARIANT === 'tech'
-  ? TECH_FEEDS
-  : SITE_VARIANT === 'finance'
-    ? FINANCE_FEEDS
-    : SITE_VARIANT === 'happy'
-      ? HAPPY_FEEDS
-      : FULL_FEEDS;
+export const FEEDS = FINANCE_FEEDS;
 
 export const SOURCE_REGION_MAP: Record<string, { labelKey: string; feedKeys: string[] }> = {
   // Full (geopolitical) variant regions

@@ -1,6 +1,5 @@
 import type { MilitaryFlight, MilitaryOperator } from '@/types';
 import type { SignalType } from '@/utils/analysis-constants';
-import { MILITARY_BASES_EXPANDED } from '@/config/bases-expanded';
 import { focalPointDetector } from './focal-point-detector';
 import { getCountryScore } from './country-instability';
 
@@ -113,9 +112,9 @@ const THEATERS: MilitaryTheater[] = [
     id: 'middle-east',
     name: 'Middle East / Persian Gulf',
     baseIds: ['al_udeid', 'ali_al_salem_air_base', 'camp_arifjan', 'camp_buehring', 'kuwait_naval_base',
-              'naval_support_activity_bahrain', 'isa_air_base', 'masirah_aira_base', 'rafo_thumrait',
-              'al_dhafra_air_base', 'port_of_jebel_ali', 'fujairah_naval_base', 'prince_sultan_air_base',
-              'ain_assad_air_base', 'camp_victory', 'naval_support_facility_diego_garcia'],
+      'naval_support_activity_bahrain', 'isa_air_base', 'masirah_aira_base', 'rafo_thumrait',
+      'al_dhafra_air_base', 'port_of_jebel_ali', 'fujairah_naval_base', 'prince_sultan_air_base',
+      'ain_assad_air_base', 'camp_victory', 'naval_support_facility_diego_garcia'],
     centerLat: 27.0,
     centerLon: 50.0,
   },
@@ -137,7 +136,7 @@ const THEATERS: MilitaryTheater[] = [
     id: 'pacific-west',
     name: 'Western Pacific',
     baseIds: ['kadena_air_base', 'camp_fuji', 'fleet_activities_okinawa', 'yokota', 'misawsa',
-              'osan_air_base', 'kunsan_ab', 'us_army_garrison_humphreys', 'andersen_air_force_base'],
+      'osan_air_base', 'kunsan_ab', 'us_army_garrison_humphreys', 'andersen_air_force_base'],
     centerLat: 30.0,
     centerLon: 130.0,
   },
@@ -156,7 +155,6 @@ const BASELINE_MIN_SAMPLES = 6;
 const TRANSPORT_CALLSIGN_PATTERNS = [
   /^RCH/i, /^REACH/i, /^MOOSE/i, /^HERKY/i, /^EVAC/i, /^DUSTOFF/i,
 ];
-const PROXIMITY_RADIUS_KM = 150;
 
 const activityHistory = new Map<string, TheaterActivity[]>();
 const activeSurges = new Map<string, SurgeAlert>();
@@ -183,15 +181,9 @@ function distanceKm(lat1: number, lon1: number, lat2: number, lon2: number): num
   return R * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
 }
 
-function findNearbyBases(lat: number, lon: number): { baseId: string; baseName: string; distance: number }[] {
-  const nearby: { baseId: string; baseName: string; distance: number }[] = [];
-  for (const base of MILITARY_BASES_EXPANDED) {
-    const dist = distanceKm(lat, lon, base.lat, base.lon);
-    if (dist <= PROXIMITY_RADIUS_KM) {
-      nearby.push({ baseId: base.id, baseName: base.name, distance: dist });
-    }
-  }
-  return nearby.sort((a, b) => a.distance - b.distance);
+function findNearbyBases(_lat: number, _lon: number): { baseId: string; baseName: string; distance: number }[] {
+  // MILITARY_BASES_EXPANDED config removed during finance-only migration
+  return [];
 }
 
 function isTransportFlight(flight: MilitaryFlight): boolean {

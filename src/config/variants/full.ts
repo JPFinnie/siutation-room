@@ -8,11 +8,7 @@ export * from './base';
 // Geopolitical-specific exports
 export * from '../feeds';
 export * from '../geo';
-export * from '../irradiators';
 export * from '../pipelines';
-export * from '../ports';
-export * from '../military';
-export * from '../airports';
 export * from '../entities';
 
 // Panel configuration for geopolitical analysis
