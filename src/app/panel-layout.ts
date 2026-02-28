@@ -25,6 +25,7 @@ import {
   INTEL_SOURCES,
   DEFAULT_PANELS,
   STORAGE_KEYS,
+  PANEL_CATEGORY_MAP,
 } from '@/config';
 import { t } from '@/services/i18n';
 import { getCurrentTheme } from '@/utils';
@@ -61,10 +62,13 @@ export class PanelLayoutManager implements AppModule {
   }
 
   renderLayout(): void {
+    const hamburgerSvg = `<svg width="15" height="15" viewBox="0 0 15 15" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M1.5 3h12M1.5 7.5h12M1.5 12h12" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>`;
+
     this.ctx.container.innerHTML = `
       <div class="header">
         <div class="header-left">
-          <span class="logo">FINANCE MONITOR</span><span class="version">v${__APP_VERSION__}</span>
+          <button class="sidebar-toggle-btn" id="sidebarToggleBtn" title="Toggle panel sidebar" aria-label="Toggle sidebar">${hamburgerSvg}</button>
+          <span class="logo">Finance Monitor</span><span class="version">v${__APP_VERSION__}</span>
           <div class="status-indicator">
             <span class="status-dot"></span>
             <span>${t('header.live')}</span>
@@ -90,12 +94,23 @@ export class PanelLayoutManager implements AppModule {
           ${this.buildTickerPlaceholder()}
         </div>
       </div>
-      <div class="main-content">
-        <div class="panels-grid" id="panelsGrid"></div>
+      <div class="app-body">
+        <aside class="sidebar" id="mainSidebar">
+          <div class="sidebar-inner">
+            <div class="sidebar-header">
+              <span class="sidebar-title">Panels</span>
+            </div>
+            <div class="sidebar-body" id="sidebarBody"></div>
+          </div>
+        </aside>
+        <div class="main-content">
+          <div class="panels-grid" id="panelsGrid"></div>
+        </div>
       </div>
     `;
 
     this.createPanels();
+    this.initSidebar();
     void this.initTicker();
     void this.initOllamaStatus();
   }
@@ -106,6 +121,112 @@ export class PanelLayoutManager implements AppModule {
       const panel = this.ctx.panels[key];
       panel?.toggle(config.enabled);
     });
+  }
+
+  private initSidebar(): void {
+    const sidebarBody = document.getElementById('sidebarBody');
+    const sidebar = document.getElementById('mainSidebar');
+    const toggleBtn = document.getElementById('sidebarToggleBtn');
+    if (!sidebarBody || !sidebar || !toggleBtn) return;
+
+    // Restore collapsed state
+    const SIDEBAR_KEY = 'wm-sidebar-collapsed';
+    const isCollapsed = localStorage.getItem(SIDEBAR_KEY) === 'true';
+    if (isCollapsed) sidebar.classList.add('sidebar-collapsed');
+
+    toggleBtn.addEventListener('click', () => {
+      const collapsed = sidebar.classList.toggle('sidebar-collapsed');
+      localStorage.setItem(SIDEBAR_KEY, String(collapsed));
+    });
+
+    // Build sidebar from PANEL_CATEGORY_MAP
+    const chevronSvg = `<svg class="sidebar-category-chevron" viewBox="0 0 12 12" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M2.5 4.5L6 8L9.5 4.5" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg>`;
+    const COLLAPSED_CATS_KEY = 'wm-sidebar-cats';
+
+    let collapsedCats: Set<string>;
+    try {
+      collapsedCats = new Set(JSON.parse(localStorage.getItem(COLLAPSED_CATS_KEY) || '[]'));
+    } catch {
+      collapsedCats = new Set();
+    }
+
+    const saveCollapsedCats = () => {
+      localStorage.setItem(COLLAPSED_CATS_KEY, JSON.stringify([...collapsedCats]));
+    };
+
+    for (const [catKey, catDef] of Object.entries(PANEL_CATEGORY_MAP)) {
+      // Resolve label — translate if possible, otherwise use the key
+      const catLabel = t(catDef.labelKey as any) || catDef.labelKey;
+      const isCatCollapsed = collapsedCats.has(catKey);
+
+      const section = document.createElement('div');
+      section.className = `sidebar-category${isCatCollapsed ? ' collapsed' : ''}`;
+      section.dataset.cat = catKey;
+
+      // Category label row (clickable to collapse/expand)
+      const labelRow = document.createElement('div');
+      labelRow.className = 'sidebar-category-label';
+      labelRow.innerHTML = `<span>${catLabel}</span>${chevronSvg}`;
+      labelRow.addEventListener('click', () => {
+        const nowCollapsed = section.classList.toggle('collapsed');
+        if (nowCollapsed) collapsedCats.add(catKey);
+        else collapsedCats.delete(catKey);
+        saveCollapsedCats();
+      });
+      section.appendChild(labelRow);
+
+      // Items container
+      const itemsEl = document.createElement('div');
+      itemsEl.className = 'sidebar-category-items';
+
+      // Calculate max-height for animation
+      const panelCount = catDef.panelKeys.filter(k => this.ctx.panels[k]).length;
+      itemsEl.style.maxHeight = `${panelCount * 30}px`;
+
+      for (const panelKey of catDef.panelKeys) {
+        const panel = this.ctx.panels[panelKey];
+        if (!panel) continue;
+
+        const config = this.ctx.panelSettings[panelKey];
+        if (!config) continue;
+
+        const name = config.name || panelKey;
+        const enabled = config.enabled !== false;
+
+        const item = document.createElement('div');
+        item.className = `sidebar-panel-item${enabled ? '' : ' panel-disabled'}`;
+        item.dataset.panelKey = panelKey;
+
+        const switchId = `sidebar-sw-${panelKey}`;
+        item.innerHTML = `
+          <label class="sidebar-panel-label" for="${switchId}" title="${name}">${name}</label>
+          <label class="sidebar-toggle-switch">
+            <input type="checkbox" id="${switchId}"${enabled ? ' checked' : ''}>
+            <span class="sidebar-toggle-track"></span>
+          </label>
+        `;
+
+        const checkbox = item.querySelector<HTMLInputElement>('input[type="checkbox"]')!;
+        checkbox.addEventListener('change', () => {
+          const nowEnabled = checkbox.checked;
+          const cfg = this.ctx.panelSettings[panelKey];
+          if (cfg) cfg.enabled = nowEnabled;
+          this.ctx.panels[panelKey]?.toggle(nowEnabled);
+          saveToStorage(STORAGE_KEYS.panels, this.ctx.panelSettings);
+          item.classList.toggle('panel-disabled', !nowEnabled);
+        });
+
+        itemsEl.appendChild(item);
+      }
+
+      section.appendChild(itemsEl);
+
+      if (isCatCollapsed) {
+        itemsEl.style.maxHeight = '0';
+      }
+
+      sidebarBody.appendChild(section);
+    }
   }
 
   private createPanels(): void {
