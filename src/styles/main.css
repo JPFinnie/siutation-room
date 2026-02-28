@@ -5092,6 +5092,123 @@ a.prediction-link:hover {
   line-height: 1.6;
 }
 
+/* No-data / API key required state */
+.panel-no-data {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 32px 16px;
+  min-height: 120px;
+  gap: 8px;
+}
+
+.panel-no-data-icon {
+  font-size: 24px;
+  opacity: 0.3;
+  margin-bottom: 4px;
+}
+
+.panel-no-data-title {
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--text-dim);
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+
+.panel-no-data-hint {
+  font-size: 10px;
+  color: var(--text-faint);
+  text-align: center;
+  line-height: 1.5;
+  max-width: 200px;
+}
+
+/* ============================================================
+   Market Ticker Strip
+   ============================================================ */
+.ticker-strip {
+  display: flex;
+  align-items: center;
+  height: 28px;
+  background: #0d0d0d;
+  border-bottom: 1px solid var(--border-subtle);
+  overflow: hidden;
+  flex-shrink: 0;
+  position: relative;
+}
+
+.ticker-strip::before,
+.ticker-strip::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  width: 40px;
+  z-index: 2;
+  pointer-events: none;
+}
+
+.ticker-strip::before {
+  left: 0;
+  background: linear-gradient(to right, #0d0d0d, transparent);
+}
+
+.ticker-strip::after {
+  right: 0;
+  background: linear-gradient(to left, #0d0d0d, transparent);
+}
+
+.ticker-track {
+  display: flex;
+  align-items: center;
+  gap: 0;
+  animation: ticker-scroll 60s linear infinite;
+  white-space: nowrap;
+  will-change: transform;
+}
+
+.ticker-track:hover {
+  animation-play-state: paused;
+}
+
+@keyframes ticker-scroll {
+  0%   { transform: translateX(0); }
+  100% { transform: translateX(-50%); }
+}
+
+.ticker-item {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 0 20px;
+  font-size: 11px;
+  font-family: var(--font-mono);
+  border-right: 1px solid var(--border-subtle);
+  line-height: 28px;
+}
+
+.ticker-symbol {
+  color: var(--text-dim);
+  font-weight: 600;
+  letter-spacing: 0.5px;
+}
+
+.ticker-price {
+  color: var(--text);
+  font-variant-numeric: tabular-nums;
+}
+
+.ticker-change {
+  font-size: 10px;
+  font-variant-numeric: tabular-nums;
+}
+
+.ticker-change.up   { color: var(--status-live); }
+.ticker-change.down { color: var(--semantic-critical); }
+.ticker-change.flat { color: var(--text-muted); }
+
 /* Ollama status badge in header */
 .ollama-status {
   display: flex;

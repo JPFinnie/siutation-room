@@ -85,12 +85,18 @@ export class PanelLayoutManager implements AppModule {
           <span id="unifiedSettingsMount"></span>
         </div>
       </div>
+      <div class="ticker-strip" id="tickerStrip">
+        <div class="ticker-track" id="tickerTrack">
+          ${this.buildTickerPlaceholder()}
+        </div>
+      </div>
       <div class="main-content">
         <div class="panels-grid" id="panelsGrid"></div>
       </div>
     `;
 
     this.createPanels();
+    void this.initTicker();
     void this.initOllamaStatus();
   }
 
@@ -460,6 +466,111 @@ export class PanelLayoutManager implements AppModule {
 
     await checkStatus();
     setInterval(() => { void checkStatus(); }, 30_000);
+  }
+
+  private buildTickerPlaceholder(): string {
+    const items = [
+      { symbol: 'S&P 500', price: '—', change: '' },
+      { symbol: 'NASDAQ', price: '—', change: '' },
+      { symbol: 'DOW', price: '—', change: '' },
+      { symbol: 'BTC', price: '—', change: '' },
+      { symbol: 'ETH', price: '—', change: '' },
+      { symbol: 'GOLD', price: '—', change: '' },
+      { symbol: 'WTI OIL', price: '—', change: '' },
+      { symbol: 'EUR/USD', price: '—', change: '' },
+      { symbol: 'GBP/USD', price: '—', change: '' },
+      { symbol: '10Y UST', price: '—', change: '' },
+    ];
+    // Duplicate for seamless loop
+    const all = [...items, ...items];
+    return all.map(item => `
+      <span class="ticker-item">
+        <span class="ticker-symbol">${item.symbol}</span>
+        <span class="ticker-price">${item.price}</span>
+        ${item.change ? `<span class="ticker-change flat">${item.change}</span>` : ''}
+      </span>
+    `).join('');
+  }
+
+  private async initTicker(): Promise<void> {
+    const track = document.getElementById('tickerTrack');
+    if (!track) return;
+
+    const TICKER_STOCKS = [
+      { symbol: '^GSPC', name: 'S&P 500', display: 'S&P 500' },
+      { symbol: '^IXIC', name: 'NASDAQ', display: 'NASDAQ' },
+      { symbol: '^DJI', name: 'DOW', display: 'DOW' },
+      { symbol: 'GC=F', name: 'GOLD', display: 'GOLD' },
+      { symbol: 'CL=F', name: 'WTI OIL', display: 'WTI OIL' },
+      { symbol: 'EURUSD=X', name: 'EUR/USD', display: 'EUR/USD' },
+      { symbol: 'GBPUSD=X', name: 'GBP/USD', display: 'GBP/USD' },
+      { symbol: '^TNX', name: '10Y UST', display: '10Y UST' },
+    ];
+
+    const fmt = (price: number | null, symbol: string): string => {
+      if (price == null) return '—';
+      if (symbol.includes('USD=X') || symbol === '^TNX') return price.toFixed(4);
+      if (price >= 1000) return price.toLocaleString('en-US', { maximumFractionDigits: 2 });
+      return price.toFixed(2);
+    };
+
+    const fmtChange = (change: number | null): { text: string; cls: string } => {
+      if (change == null) return { text: '', cls: 'flat' };
+      const sign = change > 0 ? '+' : '';
+      return {
+        text: `${sign}${change.toFixed(2)}%`,
+        cls: change > 0 ? 'up' : change < 0 ? 'down' : 'flat',
+      };
+    };
+
+    const renderTicker = (items: Array<{ symbol: string; display: string; price: number | null; change: number | null }>): void => {
+      // Duplicate for seamless CSS scroll loop
+      const all = [...items, ...items];
+      track.innerHTML = all.map(item => {
+        const { text: changeText, cls: changeCls } = fmtChange(item.change);
+        return `
+          <span class="ticker-item">
+            <span class="ticker-symbol">${item.display}</span>
+            <span class="ticker-price">${fmt(item.price, item.symbol)}</span>
+            ${changeText ? `<span class="ticker-change ${changeCls}">${changeText}</span>` : ''}
+          </span>
+        `;
+      }).join('');
+    };
+
+    const refresh = async (): Promise<void> => {
+      try {
+        const { fetchMultipleStocks, fetchCrypto } = await import('@/services/market');
+        const [stockResult, cryptoResult] = await Promise.allSettled([
+          fetchMultipleStocks(TICKER_STOCKS),
+          fetchCrypto(),
+        ]);
+
+        const items: Array<{ symbol: string; display: string; price: number | null; change: number | null }> = [];
+
+        if (stockResult.status === 'fulfilled') {
+          for (const d of stockResult.value.data) {
+            items.push({ symbol: d.symbol, display: d.display || d.name, price: d.price, change: d.change });
+          }
+        } else {
+          TICKER_STOCKS.forEach(s => items.push({ symbol: s.symbol, display: s.display, price: null, change: null }));
+        }
+
+        if (cryptoResult.status === 'fulfilled') {
+          const btc = cryptoResult.value.find(c => c.symbol.toLowerCase() === 'btc');
+          const eth = cryptoResult.value.find(c => c.symbol.toLowerCase() === 'eth');
+          if (btc) items.splice(3, 0, { symbol: 'BTC', display: 'BTC', price: btc.price, change: btc.change });
+          if (eth) items.splice(btc ? 4 : 3, 0, { symbol: 'ETH', display: 'ETH', price: eth.price, change: eth.change });
+        }
+
+        if (items.length > 0) renderTicker(items);
+      } catch {
+        // Silently ignore — placeholder stays visible
+      }
+    };
+
+    await refresh();
+    setInterval(() => { void refresh(); }, 60_000);
   }
 
   getLocalizedPanelName(panelKey: string, fallback: string): string {

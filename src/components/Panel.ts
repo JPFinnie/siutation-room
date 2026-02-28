@@ -68,6 +68,7 @@ export class Panel {
   private readonly contentDebounceMs = 150;
   private pendingContentHtml: string | null = null;
   private contentDebounceTimer: ReturnType<typeof setTimeout> | null = null;
+  private loadingTimeoutTimer: ReturnType<typeof setTimeout> | null = null;
 
   constructor(options: PanelOptions) {
     this.panelId = options.id;
@@ -274,6 +275,9 @@ export class Panel {
   }
 
   public showLoading(message = t('common.loading')): void {
+    // Clear any existing timeout
+    if (this.loadingTimeoutTimer) clearTimeout(this.loadingTimeoutTimer);
+
     replaceChildren(this.content,
       h('div', { className: 'panel-loading' },
         h('div', { className: 'panel-loading-radar' },
@@ -283,6 +287,19 @@ export class Panel {
         h('div', { className: 'panel-loading-text' }, message),
       ),
     );
+
+    // After 20s, show a helpful config message instead of spinning forever
+    this.loadingTimeoutTimer = setTimeout(() => {
+      if (this.content.querySelector('.panel-loading')) {
+        replaceChildren(this.content,
+          h('div', { className: 'panel-no-data' },
+            h('div', { className: 'panel-no-data-icon' }, '⚙'),
+            h('div', { className: 'panel-no-data-title' }, 'No data available'),
+            h('div', { className: 'panel-no-data-hint' }, 'Configure API keys in Settings → Runtime Config'),
+          ),
+        );
+      }
+    }, 20_000);
   }
 
   public showError(message = t('common.failedToLoad')): void {
@@ -435,6 +452,10 @@ export class Panel {
     if (this.contentDebounceTimer) {
       clearTimeout(this.contentDebounceTimer);
       this.contentDebounceTimer = null;
+    }
+    if (this.loadingTimeoutTimer) {
+      clearTimeout(this.loadingTimeoutTimer);
+      this.loadingTimeoutTimer = null;
     }
     this.pendingContentHtml = null;
 
