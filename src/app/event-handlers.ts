@@ -34,7 +34,6 @@ import {
   trackThemeChanged,
   trackMapViewChange,
   trackMapLayerToggle,
-  trackPanelToggled,
 } from '@/services/analytics';
 import { invokeTauri } from '@/services/tauri-bridge';
 import { dataFreshness } from '@/services/data-freshness';
@@ -184,7 +183,6 @@ export class EventHandlerManager implements AppModule {
         try {
           this.ctx.panelSettings = JSON.parse(e.newValue) as Record<string, PanelConfig>;
           this.applyPanelSettings();
-          this.ctx.unifiedSettings?.refreshPanelToggles();
         } catch (_) { }
       }
       if (e.key === STORAGE_KEYS.liveChannels && e.newValue) {
@@ -450,16 +448,6 @@ export class EventHandlerManager implements AppModule {
 
   setupUnifiedSettings(): void {
     this.ctx.unifiedSettings = new UnifiedSettings({
-      getPanelSettings: () => this.ctx.panelSettings,
-      togglePanel: (key: string) => {
-        const config = this.ctx.panelSettings[key];
-        if (config) {
-          config.enabled = !config.enabled;
-          trackPanelToggled(key, config.enabled);
-          saveToStorage(STORAGE_KEYS.panels, this.ctx.panelSettings);
-          this.applyPanelSettings();
-        }
-      },
       getDisabledSources: () => this.ctx.disabledSources,
       toggleSource: (name: string) => {
         if (this.ctx.disabledSources.has(name)) {
@@ -477,7 +465,6 @@ export class EventHandlerManager implements AppModule {
         saveToStorage(STORAGE_KEYS.disabledFeeds, Array.from(this.ctx.disabledSources));
       },
       getAllSourceNames: () => this.getAllSourceNames(),
-      getLocalizedPanelName: (key: string, fallback: string) => this.getLocalizedPanelName(key, fallback),
       isDesktopApp: this.ctx.isDesktopApp,
     });
 
