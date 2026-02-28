@@ -440,9 +440,11 @@ export class EventHandlerManager implements AppModule {
       timestamp: Date.now(),
     }));
 
-    const headerRight = this.ctx.container.querySelector('.header-right');
-    if (headerRight) {
-      headerRight.insertBefore(this.ctx.exportPanel.getElement(), headerRight.firstChild);
+    if (!this.ctx.isMobile) {
+      const headerRight = this.ctx.container.querySelector('.header-right');
+      if (headerRight) {
+        headerRight.insertBefore(this.ctx.exportPanel.getElement(), headerRight.firstChild);
+      }
     }
   }
 
@@ -477,9 +479,11 @@ export class EventHandlerManager implements AppModule {
   setupPlaybackControl(): void {
     this.ctx.playbackControl = { onSnapshot: () => { }, getElement: () => document.createElement('div') } as any;
 
-    const headerRight = this.ctx.container.querySelector('.header-right');
-    if (headerRight) {
-      headerRight.insertBefore(this.ctx.playbackControl!.getElement(), headerRight.firstChild);
+    if (!this.ctx.isMobile) {
+      const headerRight = this.ctx.container.querySelector('.header-right');
+      if (headerRight) {
+        headerRight.insertBefore(this.ctx.playbackControl!.getElement(), headerRight.firstChild);
+      }
     }
   }
 

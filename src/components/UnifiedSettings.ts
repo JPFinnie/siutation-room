@@ -235,6 +235,22 @@ export class UnifiedSettings {
 
     let html = '';
 
+    // About / Fork section
+    html += `
+      <div class="ai-flow-section-label">About FinSitch</div>
+      <div class="finsitch-about">
+        <p class="finsitch-about-desc">
+          FinSitch is a FinTech-focused fork of
+          <a href="https://github.com/koala73/worldmonitor" target="_blank" rel="noopener noreferrer" class="finsitch-about-link">World Monitor</a>
+          — an open-source real-time global intelligence dashboard.
+          This fork applies a modern finance UI, mobile layout, and a curated FinTech panel set.
+        </p>
+        <a href="https://github.com/koala73/worldmonitor" target="_blank" rel="noopener noreferrer" class="finsitch-source-btn">
+          View upstream source on GitHub →
+        </a>
+      </div>
+    `;
+
     // Map section
     html += `<div class="ai-flow-section-label">${t('components.insights.sectionMap')}</div>`;
     html += this.toggleRowHtml('us-map-flash', t('components.insights.mapFlashLabel'), t('components.insights.mapFlashDesc'), settings.mapNewsFlash);
@@ -246,14 +262,6 @@ export class UnifiedSettings {
 
       html += this.toggleRowHtml('us-browser', t('components.insights.aiFlowBrowserLabel'), t('components.insights.aiFlowBrowserDesc'), settings.browserModel);
       html += `<div class="ai-flow-toggle-warn" style="display:${settings.browserModel ? 'block' : 'none'}">${t('components.insights.aiFlowBrowserWarn')}</div>`;
-
-      // Ollama CTA (no download link)
-      html += `
-        <div class="ai-flow-cta">
-          <div class="ai-flow-cta-title">${t('components.insights.aiFlowOllamaCta')}</div>
-          <div class="ai-flow-cta-desc">${t('components.insights.aiFlowOllamaCtaDesc')}</div>
-        </div>
-      `;
     }
 
     // Streaming quality section

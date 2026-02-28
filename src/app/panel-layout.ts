@@ -76,7 +76,7 @@ export class PanelLayoutManager implements AppModule {
       <div class="header">
         <div class="header-left">
           <button class="sidebar-toggle-btn" id="sidebarToggleBtn" title="Toggle panel sidebar" aria-label="Toggle sidebar">${hamburgerSvg}</button>
-          <span class="logo">Finance Monitor</span><span class="version">v${__APP_VERSION__}</span>
+          <span class="logo">FinSitch</span><span class="version">v${__APP_VERSION__}</span>
           <div class="status-indicator">
             <span class="status-dot"></span>
             <span>${t('header.live')}</span>
@@ -145,7 +145,7 @@ export class PanelLayoutManager implements AppModule {
     this.ctx.container.innerHTML = `
       <div class="header mobile-header">
         <div class="header-left">
-          <span class="logo">Finance Monitor</span>
+          <span class="logo">FinSitch</span>
           <div class="status-indicator">
             <span class="status-dot"></span>
             <span>${t('header.live')}</span>
