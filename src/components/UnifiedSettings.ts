@@ -243,11 +243,17 @@ export class UnifiedSettings {
           FinSitch is a FinTech-focused fork of
           <a href="https://github.com/koala73/worldmonitor" target="_blank" rel="noopener noreferrer" class="finsitch-about-link">World Monitor</a>
           — an open-source real-time global intelligence dashboard.
-          This fork applies a modern finance UI, mobile layout, and a curated FinTech panel set.
+          This fork applies a modern finance UI, dedicated mobile layout, and a curated FinTech panel set.
+          AI insights run on a local <strong>Ollama</strong> server hosted in Toronto, Canada.
         </p>
-        <a href="https://github.com/koala73/worldmonitor" target="_blank" rel="noopener noreferrer" class="finsitch-source-btn">
-          View upstream source on GitHub →
-        </a>
+        <div class="finsitch-about-links">
+          <a href="https://github.com/JPFinnie/siutation-room" target="_blank" rel="noopener noreferrer" class="finsitch-source-btn">
+            This fork on GitHub →
+          </a>
+          <a href="https://github.com/koala73/worldmonitor" target="_blank" rel="noopener noreferrer" class="finsitch-source-btn finsitch-source-btn--secondary">
+            Upstream (World Monitor) →
+          </a>
+        </div>
       </div>
     `;
 

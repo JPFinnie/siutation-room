@@ -88,12 +88,27 @@ body {
   background: var(--surface);
   border-bottom: 1px solid var(--border);
   display: flex;
+  flex-wrap: nowrap;
   align-items: center;
   justify-content: space-between;
   gap: 12px;
   flex-shrink: 0;
   z-index: 200;
   box-shadow: 0 1px 0 var(--border), 0 2px 12px rgba(0, 0, 0, 0.45);
+}
+
+/* Prevent main.css mobile media query from stacking header children */
+.header-left,
+.header-right {
+  flex-basis: auto !important;
+  justify-content: unset !important;
+}
+
+@media (max-width: 480px) {
+  .header {
+    flex-wrap: nowrap;
+    padding: 0 12px;
+  }
 }
 
 .header-left {
@@ -128,6 +143,13 @@ body {
   background: var(--surface-hover);
   border-color: var(--border-strong);
   color: var(--text);
+}
+
+/* Logo icon */
+.logo-icon {
+  color: var(--accent-ui);
+  flex-shrink: 0;
+  display: block;
 }
 
 /* Logo */
@@ -737,4 +759,22 @@ body {
 
 .finsitch-source-btn:hover {
   background: rgba(59, 130, 246, 0.22);
+}
+
+.finsitch-source-btn--secondary {
+  background: transparent;
+  border-color: var(--border);
+  color: var(--text-secondary);
+}
+
+.finsitch-source-btn--secondary:hover {
+  background: var(--surface-hover);
+  border-color: var(--border-strong);
+  color: var(--text);
+}
+
+.finsitch-about-links {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
 }
