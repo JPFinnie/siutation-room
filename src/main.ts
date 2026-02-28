@@ -1,4 +1,5 @@
 import './styles/base-layer.css';
+import './styles/modern-ui.css';
 import { App } from './App';
 
 // Suppress unhandled rejections from autoplay policy etc.

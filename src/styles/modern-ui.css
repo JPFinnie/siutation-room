@@ -1,0 +1,593 @@
+/* ============================================================
+   Modern UI Override — Finance App Aesthetic
+   Unlayered CSS — wins over @layer base (main.css).
+   Switches from monospace terminal look to clean Inter-based
+   finance dashboard (think Linear, Vercel, Robinhood).
+   ============================================================ */
+
+/* ---------- Global variables ---------- */
+:root {
+  --font-sans: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
+  --font-body: var(--font-sans);
+  --panel-radius: 8px;
+  --sidebar-width: 240px;
+  --header-height: 52px;
+
+  /* Refined dark palette — warmer, less pure-black */
+  --bg: #0e1117;
+  --bg-secondary: #161b25;
+  --surface: #1a1f2e;
+  --surface-hover: #1f2638;
+  --surface-active: #242a3a;
+
+  --border: #2a3042;
+  --border-strong: #3a4258;
+  --border-subtle: #1f2535;
+
+  --panel-bg: #1a1f2e;
+  --panel-border: #2a3042;
+
+  /* Accent: electric blue instead of neon green */
+  --accent-ui: #4f8ef7;
+  --accent-ui-dim: rgba(79, 142, 247, 0.15);
+  --accent-ui-border: rgba(79, 142, 247, 0.35);
+
+  /* Refined text hierarchy */
+  --text: #e2e8f0;
+  --text-secondary: #a0aec0;
+  --text-dim: #718096;
+  --text-muted: #4a5568;
+}
+
+/* ---------- Light mode refinements ---------- */
+[data-theme="light"] {
+  --bg: #f4f5f7;
+  --bg-secondary: #ebedf0;
+  --surface: #ffffff;
+  --surface-hover: #f7f8fa;
+  --surface-active: #eef0f4;
+  --panel-bg: #ffffff;
+  --panel-border: #dde1e9;
+  --border: #dde1e9;
+  --border-strong: #c5cad4;
+  --border-subtle: #edf0f5;
+  --text: #1a202c;
+  --text-secondary: #2d3748;
+  --text-dim: #4a5568;
+  --text-muted: #718096;
+}
+
+/* ---------- Base typography ---------- */
+body {
+  font-family: var(--font-sans);
+  font-size: 13px;
+  letter-spacing: -0.01em;
+}
+
+/* ---------- App shell layout ---------- */
+#app {
+  display: flex;
+  flex-direction: column;
+}
+
+/* New wrapper: sidebar + main-content side by side */
+.app-body {
+  flex: 1 1 0;
+  display: flex;
+  flex-direction: row;
+  overflow: hidden;
+  min-height: 0;
+}
+
+/* ---------- Header ---------- */
+.header {
+  height: var(--header-height);
+  min-height: var(--header-height);
+  padding: 0 16px;
+  background: var(--surface);
+  border-bottom: 1px solid var(--border);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  flex-shrink: 0;
+  z-index: 200;
+  box-shadow: 0 1px 0 var(--border);
+}
+
+.header-left {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.header-right {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+/* Sidebar toggle button in header */
+.sidebar-toggle-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  background: transparent;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  color: var(--text-dim);
+  cursor: pointer;
+  flex-shrink: 0;
+  transition: background 0.15s, border-color 0.15s, color 0.15s;
+}
+
+.sidebar-toggle-btn:hover {
+  background: var(--surface-hover);
+  border-color: var(--border-strong);
+  color: var(--text);
+}
+
+/* Logo */
+.logo {
+  font-family: var(--font-sans);
+  font-size: 15px;
+  font-weight: 700;
+  letter-spacing: -0.4px;
+  color: var(--text);
+}
+
+/* Version badge */
+.version {
+  font-size: 10px;
+  color: var(--text-dim);
+  background: var(--bg-secondary);
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  padding: 1px 6px;
+  font-weight: 500;
+  letter-spacing: 0;
+  vertical-align: middle;
+  opacity: 0.8;
+}
+
+/* Status indicator */
+.status-indicator {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 11px;
+  font-weight: 500;
+  color: var(--text-dim);
+  border: 1px solid var(--border);
+  border-radius: 20px;
+  padding: 3px 10px;
+  background: var(--bg-secondary);
+}
+
+/* Search button */
+.search-btn {
+  padding: 5px 12px;
+  background: var(--bg-secondary);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  color: var(--text-dim);
+  font-family: var(--font-sans);
+  font-size: 12px;
+  font-weight: 500;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  transition: background 0.15s, border-color 0.15s;
+  min-width: 140px;
+}
+
+.search-btn:hover {
+  background: var(--surface-hover);
+  border-color: var(--border-strong);
+  color: var(--text);
+}
+
+.search-btn kbd {
+  background: var(--border);
+  border-radius: 4px;
+  padding: 1px 5px;
+  font-size: 10px;
+  font-family: var(--font-sans);
+  color: var(--text-dim);
+}
+
+/* Theme toggle button */
+.theme-toggle-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  background: transparent;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  color: var(--text-dim);
+  cursor: pointer;
+  transition: background 0.15s, border-color 0.15s, color 0.15s;
+}
+
+.theme-toggle-btn:hover {
+  background: var(--surface-hover);
+  border-color: var(--border-strong);
+  color: var(--text);
+}
+
+/* Fullscreen button */
+.fullscreen-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  background: transparent;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  color: var(--text-dim);
+  font-size: 14px;
+  cursor: pointer;
+  transition: background 0.15s, border-color 0.15s, color 0.15s;
+}
+
+.fullscreen-btn:hover {
+  background: var(--surface-hover);
+  border-color: var(--border-strong);
+  color: var(--text);
+}
+
+/* ---------- Sidebar ---------- */
+.sidebar {
+  width: var(--sidebar-width);
+  min-width: var(--sidebar-width);
+  background: var(--surface);
+  border-right: 1px solid var(--border);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  flex-shrink: 0;
+  transition: width 0.22s cubic-bezier(0.4, 0, 0.2, 1),
+    min-width 0.22s cubic-bezier(0.4, 0, 0.2, 1),
+    opacity 0.18s ease;
+  z-index: 50;
+}
+
+.sidebar.sidebar-collapsed {
+  width: 0;
+  min-width: 0;
+  opacity: 0;
+  pointer-events: none;
+  overflow: hidden;
+}
+
+.sidebar-inner {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  overflow: hidden;
+  width: var(--sidebar-width);
+}
+
+.sidebar-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 12px 14px 10px;
+  border-bottom: 1px solid var(--border);
+  flex-shrink: 0;
+}
+
+.sidebar-title {
+  font-size: 11px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--text-dim);
+}
+
+.sidebar-body {
+  flex: 1;
+  overflow-y: auto;
+  overflow-x: hidden;
+  padding: 8px 0 16px;
+  scrollbar-width: thin;
+  scrollbar-color: var(--border) transparent;
+}
+
+.sidebar-body::-webkit-scrollbar {
+  width: 4px;
+}
+
+.sidebar-body::-webkit-scrollbar-thumb {
+  background: var(--border);
+  border-radius: 2px;
+}
+
+/* Sidebar category section */
+.sidebar-category {
+  padding: 0;
+}
+
+.sidebar-category + .sidebar-category {
+  margin-top: 2px;
+}
+
+.sidebar-category-label {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 8px 14px 4px;
+  font-size: 10px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.09em;
+  color: var(--text-muted);
+  cursor: pointer;
+  user-select: none;
+}
+
+.sidebar-category-label:hover {
+  color: var(--text-dim);
+}
+
+.sidebar-category-chevron {
+  width: 12px;
+  height: 12px;
+  color: var(--text-muted);
+  transition: transform 0.15s;
+  flex-shrink: 0;
+}
+
+.sidebar-category.collapsed .sidebar-category-chevron {
+  transform: rotate(-90deg);
+}
+
+.sidebar-category-items {
+  padding: 0;
+  overflow: hidden;
+  transition: max-height 0.2s ease;
+}
+
+.sidebar-category.collapsed .sidebar-category-items {
+  max-height: 0 !important;
+}
+
+/* Individual panel toggle row */
+.sidebar-panel-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 5px 14px 5px 20px;
+  cursor: pointer;
+  gap: 8px;
+  border-radius: 0;
+  transition: background 0.1s;
+}
+
+.sidebar-panel-item:hover {
+  background: var(--surface-hover);
+}
+
+.sidebar-panel-label {
+  flex: 1;
+  font-size: 12px;
+  font-weight: 400;
+  color: var(--text-secondary);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  min-width: 0;
+  transition: color 0.15s;
+  user-select: none;
+}
+
+.sidebar-panel-item:hover .sidebar-panel-label {
+  color: var(--text);
+}
+
+.sidebar-panel-item.panel-disabled .sidebar-panel-label {
+  color: var(--text-muted);
+}
+
+/* Toggle switch */
+.sidebar-toggle-switch {
+  position: relative;
+  width: 28px;
+  height: 16px;
+  flex-shrink: 0;
+}
+
+.sidebar-toggle-switch input {
+  opacity: 0;
+  width: 0;
+  height: 0;
+  position: absolute;
+}
+
+.sidebar-toggle-track {
+  position: absolute;
+  inset: 0;
+  background: var(--border);
+  border-radius: 8px;
+  transition: background 0.2s;
+  cursor: pointer;
+}
+
+.sidebar-toggle-track::after {
+  content: '';
+  position: absolute;
+  left: 2px;
+  top: 2px;
+  width: 12px;
+  height: 12px;
+  background: var(--text-dim);
+  border-radius: 50%;
+  transition: transform 0.2s, background 0.2s;
+}
+
+.sidebar-toggle-switch input:checked + .sidebar-toggle-track {
+  background: var(--accent-ui);
+}
+
+.sidebar-toggle-switch input:checked + .sidebar-toggle-track::after {
+  transform: translateX(12px);
+  background: #fff;
+}
+
+/* ---------- Main content area ---------- */
+/* Remove the standalone .main-content styles — now inside .app-body */
+.main-content {
+  flex: 1 1 0;
+  min-height: 0;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  overflow-y: auto;
+  overflow-x: hidden;
+  background: var(--bg);
+}
+
+/* ---------- Panel grid ---------- */
+.panels-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  grid-auto-flow: row dense;
+  grid-auto-rows: minmax(220px, 360px);
+  gap: 10px;
+  padding: 12px;
+  align-content: start;
+}
+
+/* ---------- Panel cards ---------- */
+.panel {
+  background: var(--panel-bg);
+  border: 1px solid var(--panel-border);
+  border-top: 1px solid var(--panel-border);
+  border-radius: var(--panel-radius);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.25), 0 0 0 1px var(--panel-border);
+  overflow: hidden;
+  transition: box-shadow 0.15s, border-color 0.15s;
+  contain: content;
+}
+
+.panel:hover {
+  border-color: var(--border-strong);
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.3), 0 0 0 1px var(--border-strong);
+}
+
+[data-theme="light"] .panel {
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.06), 0 0 0 1px var(--panel-border);
+}
+
+[data-theme="light"] .panel:hover {
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.1), 0 0 0 1px var(--border-strong);
+}
+
+/* ---------- Panel header ---------- */
+.panel-header {
+  padding: 10px 12px;
+  background: transparent;
+  border-bottom: 1px solid var(--border-subtle);
+  border-left: none;
+  border-radius: var(--panel-radius) var(--panel-radius) 0 0;
+  background-image: none;
+  /* Remove the linear-gradient left-border accent */
+  background: var(--surface);
+}
+
+[data-theme="light"] .panel-header {
+  background: var(--surface);
+}
+
+.panel-header-left {
+  gap: 6px;
+}
+
+/* Panel title — drop ALL CAPS */
+.panel-title {
+  font-family: var(--font-sans);
+  font-size: 12px;
+  font-weight: 600;
+  text-transform: none;
+  letter-spacing: -0.01em;
+  color: var(--text-secondary);
+}
+
+/* Panel count badge */
+.panel-count {
+  font-size: 10px;
+  font-weight: 600;
+  color: var(--text-dim);
+  background: var(--bg-secondary);
+  border: 1px solid var(--border);
+  padding: 1px 6px;
+  border-radius: 10px;
+  font-variant-numeric: tabular-nums;
+}
+
+/* Panel data badge */
+.panel-data-badge {
+  font-size: 10px;
+  font-weight: 500;
+  padding: 2px 7px;
+  border-radius: 10px;
+  border: 1px solid transparent;
+}
+
+/* Panel resize handle */
+.panel-resize-handle {
+  background: linear-gradient(to top, rgba(79, 142, 247, 0.1), transparent);
+}
+
+.panel-resize-handle:hover,
+.panel-resize-handle.active {
+  background: linear-gradient(to top, rgba(79, 142, 247, 0.35), transparent);
+}
+
+/* ---------- Ticker strip ---------- */
+.ticker-strip {
+  background: var(--surface);
+  border-bottom: 1px solid var(--border);
+}
+
+/* ---------- Scrollbar refinement ---------- */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--border);
+  border-radius: 3px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--border-strong);
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+/* ---------- Status dot — blue accent ---------- */
+.status-dot {
+  background: var(--accent-ui);
+  box-shadow: 0 0 6px var(--accent-ui);
+}
+
+/* ---------- Panel span classes (height) ---------- */
+.panel.span-2 { min-height: 440px !important; }
+.panel.span-3 { min-height: 660px !important; }
+.panel.span-4 { min-height: 880px !important; }
+
+/* ---------- Dragging ---------- */
+.panel.dragging {
+  box-shadow: 0 12px 32px rgba(79, 142, 247, 0.25);
+  border-color: var(--accent-ui-border);
+}
