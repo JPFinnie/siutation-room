@@ -1,96 +1,64 @@
-# World Monitor
+# FinSitch
 
-**Real-time global intelligence dashboard** — AI-powered news aggregation, geopolitical monitoring, and infrastructure tracking in a unified situational awareness interface.
+**Real-time FinTech situation dashboard** — AI-powered market intelligence, live financial news, macro signals, ETF flows, crypto, and global financial data in one unified view.
 
-[![GitHub stars](https://img.shields.io/github/stars/koala73/worldmonitor?style=social)](https://github.com/koala73/worldmonitor/stargazers)
-[![GitHub forks](https://img.shields.io/github/forks/koala73/worldmonitor?style=social)](https://github.com/koala73/worldmonitor/network/members)
+> **Fork of [World Monitor](https://github.com/koala73/worldmonitor)** — an open-source real-time global intelligence dashboard (AGPL-3.0). FinSitch takes the upstream codebase and applies a modern FinTech UI, mobile-first layout, and a curated finance-focused panel set.
+
 [![License: AGPL v3](https://img.shields.io/badge/License-AGPL%20v3-blue.svg)](https://www.gnu.org/licenses/agpl-3.0)
 [![TypeScript](https://img.shields.io/badge/TypeScript-007ACC?style=flat&logo=typescript&logoColor=white)](https://www.typescriptlang.org/)
-[![Last commit](https://img.shields.io/github/last-commit/koala73/worldmonitor)](https://github.com/koala73/worldmonitor/commits/main)
-[![Latest release](https://img.shields.io/github/v/release/koala73/worldmonitor?style=flat)](https://github.com/koala73/worldmonitor/releases/latest)
+[![Upstream](https://img.shields.io/badge/Upstream-World_Monitor-6366f1?style=flat&logo=github)](https://github.com/koala73/worldmonitor)
 
 <p align="center">
-  <a href="https://worldmonitor.app"><img src="https://img.shields.io/badge/Web_App-worldmonitor.app-blue?style=for-the-badge&logo=googlechrome&logoColor=white" alt="Web App"></a>&nbsp;
-  <a href="https://tech.worldmonitor.app"><img src="https://img.shields.io/badge/Tech_Variant-tech.worldmonitor.app-0891b2?style=for-the-badge&logo=googlechrome&logoColor=white" alt="Tech Variant"></a>&nbsp;
-  <a href="https://finance.worldmonitor.app"><img src="https://img.shields.io/badge/Finance_Variant-finance.worldmonitor.app-059669?style=for-the-badge&logo=googlechrome&logoColor=white" alt="Finance Variant"></a>
+  <a href="https://siutation-room.vercel.app"><img src="https://img.shields.io/badge/Live_App-FinSitch-3b82f6?style=for-the-badge&logo=googlechrome&logoColor=white" alt="Live App"></a>
 </p>
-
-<p align="center">
-  <a href="https://worldmonitor.app/api/download?platform=windows-exe"><img src="https://img.shields.io/badge/Download-Windows_(.exe)-0078D4?style=for-the-badge&logo=windows&logoColor=white" alt="Download Windows"></a>&nbsp;
-  <a href="https://worldmonitor.app/api/download?platform=macos-arm64"><img src="https://img.shields.io/badge/Download-macOS_Apple_Silicon-000000?style=for-the-badge&logo=apple&logoColor=white" alt="Download macOS ARM"></a>&nbsp;
-  <a href="https://worldmonitor.app/api/download?platform=macos-x64"><img src="https://img.shields.io/badge/Download-macOS_Intel-555555?style=for-the-badge&logo=apple&logoColor=white" alt="Download macOS Intel"></a>&nbsp;
-  <a href="https://worldmonitor.app/api/download?platform=linux-appimage"><img src="https://img.shields.io/badge/Download-Linux_(.AppImage)-FCC624?style=for-the-badge&logo=linux&logoColor=black" alt="Download Linux"></a>
-</p>
-
-<p align="center">
-  <a href="./docs/DOCUMENTATION.md"><strong>Full Documentation</strong></a> &nbsp;·&nbsp;
-  <a href="https://github.com/koala73/worldmonitor/releases/latest"><strong>All Releases</strong></a>
-</p>
-
-![World Monitor Dashboard](new-world-monitor.png)
 
 ---
 
-## Recent Changes — v2.6 UI Overhaul
+## What is FinSitch?
 
-The dashboard UI has been fully redesigned with a **modern finance app aesthetic** (Feb 2026):
+FinSitch wraps the full World Monitor data engine (markets, news, macro signals, crypto, ETF flows, central banks, Gulf FDI) in a **clean, modern FinTech UI** — think Linear or Robinhood, not a terminal.
 
-### What changed
+### Fork changes vs upstream World Monitor
 
-| Area | Before | After |
+| Area | Upstream (World Monitor) | FinSitch |
 |---|---|---|
-| **Typography** | Monospace (terminal look) | Inter — clean, readable sans-serif |
-| **Color palette** | Pure black `#0a0a0a` | Warm blue-gray `#0e1117` — easier on the eyes |
-| **Panel cards** | No border-radius, no shadow | 8px rounded corners, subtle depth shadows |
-| **Panel titles** | ALL CAPS | Sentence case |
-| **Accent color** | Neon green | Electric blue `#4f8ef7` |
-| **Header** | 40px, monospace | 52px, Inter, pill status badge, uniform icon buttons |
-| **Layout** | Header + panels grid | Header + sidebar + panels grid |
+| **App name** | World Monitor | FinSitch |
+| **Typography** | Monospace terminal font | Inter — clean finance sans-serif |
+| **Color palette** | Pure black `#0a0a0a`, neon green | Deep navy `#060b14`, vivid blue `#3b82f6` |
+| **Panel cards** | Square, no shadow | 10px radius, gradient bg, blue accent stripe |
+| **Layout (desktop)** | Header + flat grid | Header + collapsible sidebar + grid |
+| **Layout (mobile)** | Desktop layout forced on mobile | Dedicated mobile layout: compact header + single-column panels + bottom tab nav |
+| **Settings** | General / Panels / Sources tabs | General / Sources tabs (panels managed via sidebar) |
+| **PWA / install** | Enabled | Disabled — web-only |
+| **Desktop app downloads** | Shown in UI | Removed from UI |
+| **About section** | N/A | Settings → General → About FinSitch with upstream link |
 
-### New: Panel Sidebar
+### Desktop layout
 
-A collapsible **left sidebar** (240px) lets you control exactly which panels are visible:
+A collapsible **left sidebar** (240px) groups panels into 8 categories with per-panel toggle switches. State persists to `localStorage`.
 
-- Click the **☰ hamburger button** in the top-left to toggle the sidebar open/closed
-- Panels are grouped into 8 categories: **Core**, **Markets**, **Fixed Income & FX**, **Commodities**, **Crypto & Digital**, **Central Banks & Econ**, **Deals & Institutional**, **Gulf & MENA**
-- Each category is collapsible — click the category label to hide its panels from the list
-- Each panel has a **toggle switch** — flip it off to hide the panel, flip it back on to restore it
-- All sidebar state (open/closed, collapsed categories, panel visibility) is persisted to `localStorage` and restored on the next visit
+### Mobile layout
 
-### New: CSS Architecture
+Dedicated mobile rendering path (`renderMobileLayout()`):
+- Compact header (logo + status + theme toggle + settings)
+- Single-column panel grid
+- Fixed **bottom tab bar** with 5 category tabs: News · Markets · Crypto · Macro · All
 
-A new file `src/styles/modern-ui.css` is imported **unlayered** (wins over the `@layer base` styles in `main.css`), making overrides clean and maintainable without touching the core stylesheet. Future UI tweaks can go here.
+### CSS architecture
 
----
-
-## Why World Monitor?
-
-| Problem                            | Solution                                                                                                   |
-| ---------------------------------- | ---------------------------------------------------------------------------------------------------------- |
-| News scattered across 100+ sources | **Single unified dashboard** with 100+ curated feeds                                                       |
-| No geospatial context for events   | **Interactive map** with 36+ toggleable data layers                                                        |
-| Information overload               | **AI-synthesized briefs** with focal point detection and local LLM support                                 |
-| Crypto/macro signal noise          | **7-signal market radar** with composite BUY/CASH verdict                                                  |
-| Expensive OSINT tools ($$$)        | **100% free & open source**                                                                                |
-| Static news feeds                  | **Real-time updates** with live video streams                                                              |
-| Cloud-dependent AI tools           | **Run AI locally** with Ollama/LM Studio — no API keys, no data leaves your machine                       |
-| Web-only dashboards                | **Native desktop app** (Tauri) for macOS, Windows, and Linux + installable PWA with offline map support    |
-| Flat 2D maps                       | **3D WebGL globe** with deck.gl rendering and 36+ toggleable data layers                                   |
-| Siloed financial data              | **Finance variant** with 92 stock exchanges, 19 financial centers, 13 central banks, BIS data, WTO trade policy, and Gulf FDI tracking |
-| Undocumented, fragile APIs         | **Proto-first API contracts** — 20 typed services with auto-generated clients, servers, and OpenAPI docs   |
+`src/styles/modern-ui.css` is imported **unlayered**, winning over the `@layer base` styles in `main.css` without modifying the upstream stylesheet. All FinSitch visual overrides live here.
 
 ---
 
-## Live Demos
+## Upstream: World Monitor
 
-| Variant             | URL                                                          | Focus                                            |
-| ------------------- | ------------------------------------------------------------ | ------------------------------------------------ |
-| **World Monitor**   | [worldmonitor.app](https://worldmonitor.app)                 | Geopolitics, military, conflicts, infrastructure |
-| **Tech Monitor**    | [tech.worldmonitor.app](https://tech.worldmonitor.app)       | Startups, AI/ML, cloud, cybersecurity            |
-| **Finance Monitor** | [finance.worldmonitor.app](https://finance.worldmonitor.app) | Global markets, trading, central banks, Gulf FDI |
-| **Happy Monitor**   | [happy.worldmonitor.app](https://happy.worldmonitor.app)     | Good news, positive trends, uplifting stories    |
+| | |
+|---|---|
+| **Repo** | https://github.com/koala73/worldmonitor |
+| **Live** | https://worldmonitor.app |
+| **License** | AGPL-3.0 |
 
-All four variants run from a single codebase — switch between them with one click via the header bar.
+FinSitch stays close to upstream to make merging future World Monitor improvements straightforward. The main divergence points are `src/styles/modern-ui.css`, `src/app/panel-layout.ts` (layout rendering), and `src/components/UnifiedSettings.ts` (settings tabs).
 
 ---
 
