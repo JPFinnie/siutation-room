@@ -1,28 +1,21 @@
 import { FEEDS, INTEL_SOURCES, SOURCE_REGION_MAP } from '@/config/feeds';
-import { PANEL_CATEGORY_MAP } from '@/config/panels';
 import { LANGUAGES, changeLanguage, getCurrentLanguage, t } from '@/services/i18n';
 import { getAiFlowSettings, setAiFlowSetting, getStreamQuality, setStreamQuality, STREAM_QUALITY_OPTIONS } from '@/services/ai-flow-settings';
 import type { StreamQuality } from '@/services/ai-flow-settings';
 import { escapeHtml } from '@/utils/sanitize';
 import { trackLanguageChange } from '@/services/analytics';
-import type { PanelConfig } from '@/types';
-
 const GEAR_SVG = `<svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>`;
 
-const DESKTOP_RELEASES_URL = 'https://github.com/koala73/worldmonitor/releases';
 
 export interface UnifiedSettingsConfig {
-  getPanelSettings: () => Record<string, PanelConfig>;
-  togglePanel: (key: string) => void;
   getDisabledSources: () => Set<string>;
   toggleSource: (name: string) => void;
   setSourcesEnabled: (names: string[], enabled: boolean) => void;
   getAllSourceNames: () => string[];
-  getLocalizedPanelName: (key: string, fallback: string) => string;
   isDesktopApp: boolean;
 }
 
-type TabId = 'general' | 'panels' | 'sources';
+type TabId = 'general' | 'sources';
 
 export class UnifiedSettings {
   private overlay: HTMLElement;
@@ -30,8 +23,6 @@ export class UnifiedSettings {
   private activeTab: TabId = 'general';
   private activeSourceRegion = 'all';
   private sourceFilter = '';
-  private activePanelCategory = 'all';
-  private panelFilter = '';
   private escapeHandler: (e: KeyboardEvent) => void;
 
   constructor(config: UnifiedSettingsConfig) {
@@ -67,26 +58,6 @@ export class UnifiedSettings {
       const tab = target.closest<HTMLElement>('.unified-settings-tab');
       if (tab?.dataset.tab) {
         this.switchTab(tab.dataset.tab as TabId);
-        return;
-      }
-
-      // Panel category pill
-      const panelCatPill = target.closest<HTMLElement>('[data-panel-cat]');
-      if (panelCatPill?.dataset.panelCat) {
-        this.activePanelCategory = panelCatPill.dataset.panelCat;
-        this.panelFilter = '';
-        const searchInput = this.overlay.querySelector<HTMLInputElement>('.panels-search input');
-        if (searchInput) searchInput.value = '';
-        this.renderPanelCategoryPills();
-        this.renderPanelsTab();
-        return;
-      }
-
-      // Panel toggle
-      const panelItem = target.closest<HTMLElement>('.panel-toggle-item');
-      if (panelItem?.dataset.panel) {
-        this.config.togglePanel(panelItem.dataset.panel);
-        this.renderPanelsTab();
         return;
       }
 
@@ -134,10 +105,7 @@ export class UnifiedSettings {
     // Handle input events for search
     this.overlay.addEventListener('input', (e) => {
       const target = e.target as HTMLInputElement;
-      if (target.closest('.panels-search')) {
-        this.panelFilter = target.value;
-        this.renderPanelsTab();
-      } else if (target.closest('.sources-search')) {
+      if (target.closest('.sources-search')) {
         this.sourceFilter = target.value;
         this.renderSourcesGrid();
         this.updateSourcesCounter();
@@ -192,10 +160,6 @@ export class UnifiedSettings {
     document.removeEventListener('keydown', this.escapeHandler);
   }
 
-  public refreshPanelToggles(): void {
-    if (this.activeTab === 'panels') this.renderPanelsTab();
-  }
-
   public getButton(): HTMLButtonElement {
     const btn = document.createElement('button');
     btn.className = 'unified-settings-btn';
@@ -222,20 +186,10 @@ export class UnifiedSettings {
         </div>
         <div class="unified-settings-tabs">
           <button class="${tabClass('general')}" data-tab="general">${t('header.tabGeneral')}</button>
-          <button class="${tabClass('panels')}" data-tab="panels">${t('header.tabPanels')}</button>
           <button class="${tabClass('sources')}" data-tab="sources">${t('header.tabSources')}</button>
         </div>
         <div class="unified-settings-tab-panel${this.activeTab === 'general' ? ' active' : ''}" data-panel-id="general">
           ${this.renderGeneralContent()}
-        </div>
-        <div class="unified-settings-tab-panel${this.activeTab === 'panels' ? ' active' : ''}" data-panel-id="panels">
-          <div class="unified-settings-region-wrapper">
-            <div class="unified-settings-region-bar" id="usPanelCatBar"></div>
-          </div>
-          <div class="panels-search">
-            <input type="text" placeholder="${t('header.filterPanels')}" value="${escapeHtml(this.panelFilter)}" />
-          </div>
-          <div class="panel-toggle-grid" id="usPanelToggles"></div>
         </div>
         <div class="unified-settings-tab-panel${this.activeTab === 'sources' ? ' active' : ''}" data-panel-id="sources">
           <div class="unified-settings-region-wrapper">
@@ -255,8 +209,6 @@ export class UnifiedSettings {
     `;
 
     // Populate dynamic sections after innerHTML is set
-    this.renderPanelCategoryPills();
-    this.renderPanelsTab();
     this.renderRegionPills();
     this.renderSourcesGrid();
     this.updateSourcesCounter();
@@ -295,12 +247,11 @@ export class UnifiedSettings {
       html += this.toggleRowHtml('us-browser', t('components.insights.aiFlowBrowserLabel'), t('components.insights.aiFlowBrowserDesc'), settings.browserModel);
       html += `<div class="ai-flow-toggle-warn" style="display:${settings.browserModel ? 'block' : 'none'}">${t('components.insights.aiFlowBrowserWarn')}</div>`;
 
-      // Ollama CTA
+      // Ollama CTA (no download link)
       html += `
         <div class="ai-flow-cta">
           <div class="ai-flow-cta-title">${t('components.insights.aiFlowOllamaCta')}</div>
           <div class="ai-flow-cta-desc">${t('components.insights.aiFlowOllamaCtaDesc')}</div>
-          <a href="${DESKTOP_RELEASES_URL}" target="_blank" rel="noopener noreferrer" class="ai-flow-cta-link">${t('components.insights.aiFlowDownloadDesktop')}</a>
         </div>
       `;
     }
@@ -373,70 +324,6 @@ export class UnifiedSettings {
       dot.classList.add('disabled');
       text.textContent = t('components.insights.aiFlowStatusDisabled');
     }
-  }
-
-  private getAvailablePanelCategories(): Array<{ key: string; label: string }> {
-    const panelKeys = new Set(Object.keys(this.config.getPanelSettings()));
-    const categories: Array<{ key: string; label: string }> = [
-      { key: 'all', label: t('header.sourceRegionAll') }
-    ];
-
-    for (const [catKey, catDef] of Object.entries(PANEL_CATEGORY_MAP)) {
-      const hasPanel = catDef.panelKeys.some(pk => panelKeys.has(pk));
-      if (hasPanel) {
-        categories.push({ key: catKey, label: t(catDef.labelKey) });
-      }
-    }
-
-    return categories;
-  }
-
-  private getVisiblePanelEntries(): Array<[string, PanelConfig]> {
-    const panelSettings = this.config.getPanelSettings();
-    let entries = Object.entries(panelSettings)
-      .filter(([key]) => key !== 'runtime-config' || this.config.isDesktopApp);
-
-    if (this.activePanelCategory !== 'all') {
-      const catDef = PANEL_CATEGORY_MAP[this.activePanelCategory];
-      if (catDef) {
-        const allowed = new Set(catDef.panelKeys);
-        entries = entries.filter(([key]) => allowed.has(key));
-      }
-    }
-
-    if (this.panelFilter) {
-      const lower = this.panelFilter.toLowerCase();
-      entries = entries.filter(([key, panel]) =>
-        key.toLowerCase().includes(lower) ||
-        panel.name.toLowerCase().includes(lower) ||
-        this.config.getLocalizedPanelName(key, panel.name).toLowerCase().includes(lower)
-      );
-    }
-
-    return entries;
-  }
-
-  private renderPanelCategoryPills(): void {
-    const bar = this.overlay.querySelector('#usPanelCatBar');
-    if (!bar) return;
-
-    const categories = this.getAvailablePanelCategories();
-    bar.innerHTML = categories.map(c =>
-      `<button class="unified-settings-region-pill${this.activePanelCategory === c.key ? ' active' : ''}" data-panel-cat="${c.key}">${escapeHtml(c.label)}</button>`
-    ).join('');
-  }
-
-  private renderPanelsTab(): void {
-    const container = this.overlay.querySelector('#usPanelToggles');
-    if (!container) return;
-
-    const entries = this.getVisiblePanelEntries();
-    container.innerHTML = entries.map(([key, panel]) => `
-      <div class="panel-toggle-item ${panel.enabled ? 'active' : ''}" data-panel="${escapeHtml(key)}">
-        <div class="panel-toggle-checkbox">${panel.enabled ? '✓' : ''}</div>
-        <span class="panel-toggle-label">${escapeHtml(this.config.getLocalizedPanelName(key, panel.name))}</span>
-      </div>
-    `).join('');
   }
 
   private getAvailableRegions(): Array<{ key: string; label: string }> {

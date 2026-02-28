@@ -62,6 +62,14 @@ export class PanelLayoutManager implements AppModule {
   }
 
   renderLayout(): void {
+    if (this.ctx.isMobile) {
+      this.renderMobileLayout();
+    } else {
+      this.renderDesktopLayout();
+    }
+  }
+
+  private renderDesktopLayout(): void {
     const hamburgerSvg = `<svg width="15" height="15" viewBox="0 0 15 15" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M1.5 3h12M1.5 7.5h12M1.5 12h12" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>`;
 
     this.ctx.container.innerHTML = `
@@ -113,6 +121,86 @@ export class PanelLayoutManager implements AppModule {
     this.initSidebar();
     void this.initTicker();
     void this.initOllamaStatus();
+  }
+
+  private renderMobileLayout(): void {
+    const moonSvg = '<svg viewBox="0 0 24 24"><path d="M21 12.79A9 9 0 1111.21 3 7 7 0 0021 12.79z"/></svg>';
+    const sunSvg = '<svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></svg>';
+
+    const mobileNavTabs = [
+      { key: 'core',       label: 'News',    icon: '<svg viewBox="0 0 24 24"><path d="M4 22h16a2 2 0 002-2V4a2 2 0 00-2-2H8a2 2 0 00-2 2v16a2 2 0 01-2 2zm0 0a2 2 0 01-2-2v-9c0-1.1.9-2 2-2h2"/><path d="M18 14h-8M15 18h-5M10 6h8v4h-8z"/></svg>' },
+      { key: 'markets',    label: 'Markets', icon: '<svg viewBox="0 0 24 24"><polyline points="22 7 13.5 15.5 8.5 10.5 2 17"/><polyline points="16 7 22 7 22 13"/></svg>' },
+      { key: 'cryptoDigital', label: 'Crypto', icon: '<svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M9.5 9H13a2.5 2.5 0 010 5H9.5V9zM9.5 14H13.5a2.5 2.5 0 010 5H9.5v-5z"/><line x1="12" y1="6" x2="12" y2="9"/><line x1="12" y1="19" x2="12" y2="22"/></svg>' },
+      { key: 'centralBanks', label: 'Macro', icon: '<svg viewBox="0 0 24 24"><rect x="2" y="7" width="20" height="14" rx="2"/><path d="M16 21V5a2 2 0 00-2-2h-4a2 2 0 00-2 2v16"/></svg>' },
+      { key: '__all__',    label: 'All',     icon: '<svg viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>' },
+    ];
+
+    const navHtml = mobileNavTabs.map((tab, i) =>
+      `<button class="mobile-nav-tab${i === 0 ? ' active' : ''}" data-cat="${tab.key}" aria-label="${tab.label}">
+        ${tab.icon}
+        ${tab.label}
+      </button>`
+    ).join('');
+
+    this.ctx.container.innerHTML = `
+      <div class="header mobile-header">
+        <div class="header-left">
+          <span class="logo">Finance Monitor</span>
+          <div class="status-indicator">
+            <span class="status-dot"></span>
+            <span>${t('header.live')}</span>
+          </div>
+        </div>
+        <div class="header-right">
+          <button class="theme-toggle-btn" id="headerThemeToggle" title="${t('header.toggleTheme')}">
+            ${getCurrentTheme() === 'dark' ? sunSvg : moonSvg}
+          </button>
+          <span id="unifiedSettingsMount"></span>
+        </div>
+      </div>
+      <div class="mobile-body">
+        <div class="panels-grid" id="panelsGrid"></div>
+      </div>
+      <nav class="mobile-bottom-nav" id="mobileBottomNav">
+        ${navHtml}
+      </nav>
+    `;
+
+    this.createPanels();
+    this.initMobileNav(mobileNavTabs[0]!.key);
+  }
+
+  private initMobileNav(initialCat: string): void {
+    const nav = document.getElementById('mobileBottomNav');
+    if (!nav) return;
+
+    const panelsGrid = document.getElementById('panelsGrid');
+    if (!panelsGrid) return;
+
+    const filterByCategory = (catKey: string) => {
+      const panels = panelsGrid.querySelectorAll<HTMLElement>('.panel[data-panel-key]');
+      if (catKey === '__all__') {
+        panels.forEach(p => p.classList.remove('panel-cat-hidden'));
+        return;
+      }
+      const catDef = PANEL_CATEGORY_MAP[catKey];
+      const allowed = catDef ? new Set(catDef.panelKeys) : new Set<string>();
+      panels.forEach(p => {
+        const key = p.dataset.panelKey ?? '';
+        p.classList.toggle('panel-cat-hidden', !allowed.has(key));
+      });
+    };
+
+    nav.addEventListener('click', (e) => {
+      const tab = (e.target as HTMLElement).closest<HTMLElement>('.mobile-nav-tab');
+      if (!tab?.dataset.cat) return;
+      nav.querySelectorAll('.mobile-nav-tab').forEach(t => t.classList.remove('active'));
+      tab.classList.add('active');
+      filterByCategory(tab.dataset.cat);
+    });
+
+    // Apply initial category filter
+    filterByCategory(initialCat);
   }
 
   applyPanelSettings(): void {
@@ -360,6 +448,7 @@ export class PanelLayoutManager implements AppModule {
       const panel = this.ctx.panels[key];
       if (panel) {
         const el = panel.getElement();
+        el.dataset.panelKey = key;
         this.makeDraggable(el, key);
         panelsGrid.appendChild(el);
       }
