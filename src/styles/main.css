@@ -855,15 +855,22 @@ canvas,
 .panel {
   background: var(--surface);
   border: 1px solid var(--border);
+  border-top: none;
   display: flex;
   flex-direction: column;
   overflow: hidden;
   height: 100%;
   min-height: 200px;
   cursor: grab;
-  transition: transform 0.15s, box-shadow 0.15s;
+  transition: transform 0.15s, box-shadow 0.15s, border-color 0.2s;
   position: relative;
   contain: content;
+  box-shadow: 0 1px 8px rgba(0,0,0,0.3);
+}
+
+.panel:hover {
+  border-color: var(--border-strong);
+  box-shadow: 0 2px 16px rgba(0,0,0,0.4);
 }
 
 /* .panel.resized: Custom height set - use grid-row span for height */
@@ -949,9 +956,10 @@ canvas,
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 6px 10px;
-  background: var(--overlay-subtle);
+  padding: 7px 10px;
+  background: linear-gradient(135deg, rgba(255,255,255,0.025) 0%, rgba(255,255,255,0.01) 100%);
   border-bottom: 1px solid var(--border);
+  border-left: 2px solid rgba(68, 255, 136, 0.25);
   flex-shrink: 0;
   position: relative;
   transition: background-color 0.3s ease, border-color 0.3s ease;
@@ -4975,16 +4983,17 @@ a.prediction-link:hover {
   justify-content: center;
   padding: 32px 16px;
   min-height: 120px;
+  gap: 16px;
 }
 
 .panel-loading-radar {
-  width: 64px;
-  height: 64px;
-  margin-bottom: 16px;
+  width: 56px;
+  height: 56px;
   position: relative;
-  border: 2px solid rgba(68, 255, 136, 0.3);
+  border: 1.5px solid rgba(68, 255, 136, 0.2);
   border-radius: 50%;
   overflow: hidden;
+  box-shadow: 0 0 20px rgba(68, 255, 136, 0.05), inset 0 0 20px rgba(68, 255, 136, 0.03);
 }
 
 .panel-radar-sweep {
@@ -4992,38 +5001,63 @@ a.prediction-link:hover {
   top: 50%;
   left: 50%;
   width: 50%;
-  height: 2px;
-  background: linear-gradient(90deg, transparent, var(--status-live));
+  height: 1.5px;
+  background: linear-gradient(90deg, transparent, rgba(68, 255, 136, 0.9));
   transform-origin: left center;
-  animation: panel-radar-sweep 2s linear infinite;
+  animation: panel-radar-sweep 1.8s linear infinite;
+}
+
+.panel-radar-sweep::after {
+  content: '';
+  position: absolute;
+  top: -12px;
+  left: 0;
+  right: 0;
+  bottom: -12px;
+  background: conic-gradient(from 0deg, rgba(68, 255, 136, 0.15), transparent 60deg);
+  transform-origin: left center;
 }
 
 .panel-radar-dot {
   position: absolute;
   top: 50%;
   left: 50%;
-  width: 6px;
-  height: 6px;
-  margin: -3px;
+  width: 5px;
+  height: 5px;
+  margin: -2.5px;
   background: var(--status-live);
   border-radius: 50%;
-  box-shadow: 0 0 10px var(--status-live);
+  box-shadow: 0 0 8px var(--status-live), 0 0 16px rgba(68, 255, 136, 0.4);
 }
 
 @keyframes panel-radar-sweep {
-  from {
-    transform: rotate(0deg);
-  }
+  from { transform: rotate(0deg); }
+  to   { transform: rotate(360deg); }
+}
 
-  to {
-    transform: rotate(360deg);
-  }
+/* Shimmer skeleton bars below radar */
+.panel-loading::after {
+  content: '';
+  display: block;
+  width: 80%;
+  height: 8px;
+  border-radius: 4px;
+  background: linear-gradient(90deg, var(--border) 25%, var(--surface-hover) 50%, var(--border) 75%);
+  background-size: 200% 100%;
+  animation: panel-shimmer 1.6s ease-in-out infinite;
+  opacity: 0.6;
+}
+
+@keyframes panel-shimmer {
+  0%   { background-position: 200% 0; }
+  100% { background-position: -200% 0; }
 }
 
 .panel-loading-text {
-  font-size: 12px;
-  color: var(--accent);
-  letter-spacing: 0.5px;
+  font-size: 11px;
+  color: var(--text-dim);
+  letter-spacing: 1px;
+  text-transform: uppercase;
 }
 
 .panel-loading-text.retrying {
@@ -5032,10 +5066,85 @@ a.prediction-link:hover {
 
 /* Error */
 .error-message {
-  color: var(--red);
-  font-size: 10px;
-  padding: 8px;
+  color: var(--text-muted);
+  font-size: 11px;
+  padding: 24px 16px;
   text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+}
+
+.error-message::before {
+  content: '⚠';
+  font-size: 20px;
+  color: var(--semantic-elevated);
+  opacity: 0.6;
+}
+
+/* Config error */
+.config-error-message {
+  color: var(--text-muted);
+  font-size: 11px;
+  padding: 20px 16px;
+  text-align: center;
+  line-height: 1.6;
+}
+
+/* Ollama status badge in header */
+.ollama-status {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  padding: 3px 8px;
+  border-radius: 3px;
+  border: 1px solid var(--border);
+  background: var(--overlay-subtle);
+  font-size: 9px;
+  font-weight: 700;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  color: var(--text-dim);
+  transition: all 0.3s ease;
+  cursor: default;
+}
+
+.ollama-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--text-ghost);
+  flex-shrink: 0;
+  transition: all 0.3s ease;
+}
+
+.ollama-status.ollama-connected {
+  border-color: rgba(68, 255, 136, 0.3);
+  background: rgba(68, 255, 136, 0.05);
+  color: var(--status-live);
+}
+
+.ollama-status.ollama-connected .ollama-dot {
+  background: var(--status-live);
+  box-shadow: 0 0 6px var(--status-live);
+  animation: ollama-pulse 2s ease-in-out infinite;
+}
+
+.ollama-status.ollama-disconnected {
+  border-color: rgba(255, 68, 68, 0.2);
+  background: rgba(255, 68, 68, 0.04);
+  color: var(--text-faint);
+}
+
+.ollama-status.ollama-disconnected .ollama-dot {
+  background: var(--semantic-critical);
+  opacity: 0.5;
+}
+
+@keyframes ollama-pulse {
+  0%, 100% { box-shadow: 0 0 4px var(--status-live); opacity: 1; }
+  50%       { box-shadow: 0 0 10px var(--status-live); opacity: 0.7; }
 }
 
 .config-error-message {

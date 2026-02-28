@@ -69,6 +69,10 @@ export class PanelLayoutManager implements AppModule {
             <span class="status-dot"></span>
             <span>${t('header.live')}</span>
           </div>
+          <div class="ollama-status" id="ollamaStatusBadge">
+            <span class="ollama-dot"></span>
+            <span class="ollama-label">OLLAMA</span>
+          </div>
         </div>
         <div class="header-right">
           <button class="search-btn" id="searchBtn"><kbd>⌘K</kbd> ${t('header.search')}</button>
@@ -87,6 +91,7 @@ export class PanelLayoutManager implements AppModule {
     `;
 
     this.createPanels();
+    void this.initOllamaStatus();
   }
 
   applyPanelSettings(): void {
@@ -396,6 +401,65 @@ export class PanelLayoutManager implements AppModule {
         grid.insertBefore(dragging, targetPanel);
       }
     }
+  }
+
+  private async initOllamaStatus(): Promise<void> {
+    const { getSecretState, getRuntimeConfigSnapshot } = await import('@/services/runtime-config');
+
+    const badge = document.getElementById('ollamaStatusBadge');
+    if (!badge) return;
+
+    const labelEl = badge.querySelector('.ollama-label') as HTMLElement | null;
+
+    const applyConnected = (modelName: string): void => {
+      badge.classList.remove('ollama-disconnected');
+      badge.classList.add('ollama-connected');
+      if (labelEl) labelEl.textContent = modelName || 'OLLAMA';
+    };
+
+    const applyDisconnected = (): void => {
+      badge.classList.remove('ollama-connected');
+      badge.classList.add('ollama-disconnected');
+      if (labelEl) labelEl.textContent = 'OLLAMA';
+    };
+
+    const checkStatus = async (): Promise<void> => {
+      const urlState = getSecretState('OLLAMA_API_URL');
+      if (!urlState.present) {
+        applyDisconnected();
+        return;
+      }
+
+      const snapshot = getRuntimeConfigSnapshot();
+      const ollamaUrl = snapshot.secrets['OLLAMA_API_URL']?.value ?? '';
+      const modelName = snapshot.secrets['OLLAMA_MODEL']?.value ?? 'OLLAMA';
+
+      if (!ollamaUrl) {
+        applyDisconnected();
+        return;
+      }
+
+      try {
+        const controller = new AbortController();
+        const timeoutId = setTimeout(() => controller.abort(), 3000);
+        const response = await fetch(`${ollamaUrl}/api/tags`, {
+          method: 'GET',
+          signal: controller.signal,
+        });
+        clearTimeout(timeoutId);
+
+        if (response.ok) {
+          applyConnected(modelName);
+        } else {
+          applyDisconnected();
+        }
+      } catch {
+        applyDisconnected();
+      }
+    };
+
+    await checkStatus();
+    setInterval(() => { void checkStatus(); }, 30_000);
   }
 
   getLocalizedPanelName(panelKey: string, fallback: string): string {
