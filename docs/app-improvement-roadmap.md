@@ -1,50 +1,195 @@
-# FinSitch Improvement Roadmap
+# FinSitch Improvement Roadmap (Impact-Ranked)
 
-This roadmap focuses on improvements that would make the app more trustworthy, faster to use, and easier to evolve.
+This version prioritizes the highest-leverage product changes first, with clear justification and success metrics.
 
-## 1) Improve user trust and data transparency
+## Prioritization Method
 
-- Add a visible **"data health" dock** that surfaces stale/error states by source and panel.
-- Extend existing freshness tracking into per-panel badges (Fresh / Delayed / Offline) with drill-down to source-level failures.
-- Add "last successful refresh" and source reliability trends over 24h.
+Each initiative is ranked by:
 
-## 2) Better international UX (without full page reload)
+- **User Impact**: how much it improves decision quality/speed.
+- **Business Impact**: retention, activation, and trust effects.
+- **Implementation Cost**: engineering effort and risk.
 
-- Remove full page reload after language changes.
-- Switch language live by rerendering UI bindings and keeping map/panel state intact.
-- Add locale-aware number/date formatting consistency checks.
+---
 
-## 3) Create privacy-safe product analytics for UX decisions
+## 1) Data Trust Layer (Highest Impact)
 
-- Implement minimal, opt-in telemetry for core interactions (panel open/close, search success, settings completion), with local aggregation before send.
-- Keep current local-only default, but expose optional analytics adapters (self-hosted or cloud) so improvements can be measured.
+### What to build
 
-## 4) Reduce information overload with "market mode" presets
+- Add a persistent **Data Health Bar** in the header: Fresh / Delayed / Degraded / Offline.
+- Surface per-panel freshness badges and source-level failure reasons.
+- Add “last successful update” timestamps and 24h source reliability trends.
 
-- Add preset layouts (Macro Day, Earnings Day, Volatility Mode, Crypto Mode).
-- Prefill panel and map-layer toggles to reduce setup time for first-time users.
-- Add quick command palette actions for preset switching.
+### Why this is impactful
 
-## 5) Improve feed quality and dedup relevance
+- This app is used for time-sensitive analysis; stale data with no context can lead to wrong conclusions.
+- Clear trust signals reduce cognitive overhead and improve analyst confidence immediately.
+- The codebase already has freshness primitives, so this is high impact with moderate effort.
 
-- Add stronger source weighting and duplicate collapse across near-identical wire copies.
-- Show "why this is shown" badges (source tier, novelty score, recency).
-- Add per-feed health metrics (timeouts, parse failures) and temporary quarantine for noisy feeds.
+### Success metrics
 
-## 6) Performance guardrails and budgets
+- +20% increase in sessions where users open source drill-down (indicates trust-check behavior).
+- -30% drop in support/feedback about “is this data live?” confusion.
+- Higher average session duration on high-volatility days.
 
-- Define page-interaction SLOs (first usable panel render, map ready, search latency).
-- Add CI checks for bundle regressions and interaction timing thresholds.
-- Introduce adaptive polling intervals based on tab visibility and device constraints.
+---
 
-## 7) Onboarding and retention
+## 2) No-Reload Language Switching
 
-- Add first-run walkthrough for panel categories, risk/freshness semantics, and source controls.
-- Add "Saved Workspaces" so users can store and share panel/layer configurations.
-- Introduce keyboard shortcuts cheat sheet and command palette discoverability.
+### What to build
 
-## 8) Branding and discoverability cleanup
+- Remove full window reload when language changes.
+- Re-render translated UI strings live while preserving map center, filters, and panel state.
+- Add locale formatting consistency for numbers/dates/currency.
 
-- Standardize naming (FinSitch vs Situation Room) and domain spelling consistency.
-- Add clearer value proposition and role-based landing copy (trader, analyst, newsroom).
-- Tighten social preview cards and SEO metadata for finance-specific intents.
+### Why this is impactful
+
+- Current forced reload interrupts active workflows and causes state loss.
+- Multilingual monitoring is a core differentiator; frictionless language switching increases utility for global teams.
+
+### Success metrics
+
+- +15% increase in multilingual sessions (users switching language at least once).
+- -40% reduction in drop-off immediately after language change.
+
+---
+
+## 3) Workflow Presets (“Market Modes”)
+
+### What to build
+
+- Add one-click presets: **Macro Day**, **Earnings Day**, **Volatility Mode**, **Crypto Focus**.
+- Presets configure panel visibility, map layers, and feed emphasis.
+- Add command-palette shortcuts for fast switching.
+
+### Why this is impactful
+
+- The app has many panels/layers; first-time users can feel overwhelmed.
+- Presets shorten time-to-value and reduce setup friction for repeat workflows.
+
+### Success metrics
+
+- -35% time-to-first-meaningful-interaction (first panel interaction + map action).
+- +25% increase in returning users adopting at least one preset.
+
+---
+
+## 4) Feed Quality & Relevance Ranking
+
+### What to build
+
+- Add stronger near-duplicate collapse across wire copies.
+- Rank by source credibility tier + novelty + recency.
+- Show “Why this item?” labels (source quality, freshness, uniqueness).
+- Add temporary quarantine for feeds with repeated parse/timeouts.
+
+### Why this is impactful
+
+- Signal quality is more valuable than feed volume in intelligence workflows.
+- Better ranking and explainability improves trust and reduces noise fatigue.
+
+### Success metrics
+
+- +20% click-through on top 5 items in each feed.
+- -30% duplicate headline exposure per session.
+
+---
+
+## 5) Privacy-Safe Product Analytics (Opt-In)
+
+### What to build
+
+- Add opt-in telemetry for core UX events (panel toggles, search success, preset usage, settings completion).
+- Keep privacy-first defaults and aggregate locally before shipping.
+- Support pluggable adapters (self-hosted/cloud).
+
+### Why this is impactful
+
+- Without usage data, roadmap decisions are guesswork.
+- Opt-in architecture preserves privacy while enabling evidence-based improvement.
+
+### Success metrics
+
+- Instrument at least 80% of critical user flows.
+- Monthly product decisions tied to measurable metrics instead of anecdotal feedback.
+
+---
+
+## 6) Performance SLOs + CI Guardrails
+
+### What to build
+
+- Define performance budgets for first panel render, map-ready time, and search response.
+- Add CI checks for bundle growth and interaction regressions.
+- Apply adaptive polling based on visibility and device capability.
+
+### Why this is impactful
+
+- Performance regressions are hard to spot until users complain.
+- Hard guardrails keep speed from degrading as features scale.
+
+### Success metrics
+
+- Keep p95 map-ready time under target budget.
+- Zero unnoticed bundle-size regressions beyond threshold.
+
+---
+
+## 7) Onboarding + Saved Workspaces
+
+### What to build
+
+- Add a first-run guided tour (freshness, signals, map layers, feed controls).
+- Add saved workspace profiles and shareable workspace links.
+- Add keyboard-shortcuts modal and command palette discoverability hints.
+
+### Why this is impactful
+
+- Better onboarding boosts activation.
+- Saved workspaces improve retention for analyst teams with recurring workflows.
+
+### Success metrics
+
+- +20% activation (users completing at least 3 key actions in first session).
+- +15% week-2 retention for new users.
+
+---
+
+## 8) Naming + Positioning Consistency
+
+### What to build
+
+- Standardize product naming across app/UI/domain/social metadata.
+- Clarify role-based value props (trader, analyst, newsroom).
+- Tighten landing page and OG cards for finance intent keywords.
+
+### Why this is impactful
+
+- Inconsistent naming harms trust and discoverability.
+- Clear positioning improves conversion from first visit to active use.
+
+### Success metrics
+
+- Improved branded-search CTR.
+- Increased conversion from landing page to active session.
+
+---
+
+## Suggested Delivery Plan
+
+### Phase 1 (Quick wins, 1–2 sprints)
+
+1. Data Trust Layer
+2. No-Reload Language Switching
+3. Workflow Presets
+
+### Phase 2 (Scale quality, 2–3 sprints)
+
+4. Feed Quality & Relevance Ranking
+5. Performance SLOs + CI Guardrails
+
+### Phase 3 (Growth + optimization)
+
+6. Privacy-Safe Analytics
+7. Onboarding + Saved Workspaces
+8. Naming + Positioning Consistency
