@@ -246,14 +246,6 @@ export class UnifiedSettings {
 
       html += this.toggleRowHtml('us-browser', t('components.insights.aiFlowBrowserLabel'), t('components.insights.aiFlowBrowserDesc'), settings.browserModel);
       html += `<div class="ai-flow-toggle-warn" style="display:${settings.browserModel ? 'block' : 'none'}">${t('components.insights.aiFlowBrowserWarn')}</div>`;
-
-      // Ollama CTA (no download link)
-      html += `
-        <div class="ai-flow-cta">
-          <div class="ai-flow-cta-title">${t('components.insights.aiFlowOllamaCta')}</div>
-          <div class="ai-flow-cta-desc">${t('components.insights.aiFlowOllamaCtaDesc')}</div>
-        </div>
-      `;
     }
 
     // Streaming quality section
