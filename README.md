@@ -31,6 +31,38 @@
 
 ---
 
+## Recent Changes — v2.6 UI Overhaul
+
+The dashboard UI has been fully redesigned with a **modern finance app aesthetic** (Feb 2026):
+
+### What changed
+
+| Area | Before | After |
+|---|---|---|
+| **Typography** | Monospace (terminal look) | Inter — clean, readable sans-serif |
+| **Color palette** | Pure black `#0a0a0a` | Warm blue-gray `#0e1117` — easier on the eyes |
+| **Panel cards** | No border-radius, no shadow | 8px rounded corners, subtle depth shadows |
+| **Panel titles** | ALL CAPS | Sentence case |
+| **Accent color** | Neon green | Electric blue `#4f8ef7` |
+| **Header** | 40px, monospace | 52px, Inter, pill status badge, uniform icon buttons |
+| **Layout** | Header + panels grid | Header + sidebar + panels grid |
+
+### New: Panel Sidebar
+
+A collapsible **left sidebar** (240px) lets you control exactly which panels are visible:
+
+- Click the **☰ hamburger button** in the top-left to toggle the sidebar open/closed
+- Panels are grouped into 8 categories: **Core**, **Markets**, **Fixed Income & FX**, **Commodities**, **Crypto & Digital**, **Central Banks & Econ**, **Deals & Institutional**, **Gulf & MENA**
+- Each category is collapsible — click the category label to hide its panels from the list
+- Each panel has a **toggle switch** — flip it off to hide the panel, flip it back on to restore it
+- All sidebar state (open/closed, collapsed categories, panel visibility) is persisted to `localStorage` and restored on the next visit
+
+### New: CSS Architecture
+
+A new file `src/styles/modern-ui.css` is imported **unlayered** (wins over the `@layer base` styles in `main.css`), making overrides clean and maintainable without touching the core stylesheet. Future UI tweaks can go here.
+
+---
+
 ## Why World Monitor?
 
 | Problem                            | Solution                                                                                                   |
