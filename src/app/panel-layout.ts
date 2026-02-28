@@ -71,12 +71,13 @@ export class PanelLayoutManager implements AppModule {
 
   private renderDesktopLayout(): void {
     const hamburgerSvg = `<svg width="15" height="15" viewBox="0 0 15 15" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M1.5 3h12M1.5 7.5h12M1.5 12h12" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>`;
+    const logoSvg = `<svg class="logo-icon" width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg"><rect x="1" y="12" width="4" height="7" rx="1" fill="currentColor"/><rect x="8" y="7" width="4" height="12" rx="1" fill="currentColor"/><rect x="15" y="3" width="4" height="16" rx="1" fill="currentColor"/><polyline points="3,12 10,7 17,3" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" opacity="0.4"/></svg>`;
 
     this.ctx.container.innerHTML = `
       <div class="header">
         <div class="header-left">
           <button class="sidebar-toggle-btn" id="sidebarToggleBtn" title="Toggle panel sidebar" aria-label="Toggle sidebar">${hamburgerSvg}</button>
-          <span class="logo">FinSitch</span><span class="version">v${__APP_VERSION__}</span>
+          ${logoSvg}<span class="logo">FinSitch</span><span class="version">v${__APP_VERSION__}</span>
           <div class="status-indicator">
             <span class="status-dot"></span>
             <span>${t('header.live')}</span>
@@ -127,6 +128,8 @@ export class PanelLayoutManager implements AppModule {
     const moonSvg = '<svg viewBox="0 0 24 24"><path d="M21 12.79A9 9 0 1111.21 3 7 7 0 0021 12.79z"/></svg>';
     const sunSvg = '<svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></svg>';
 
+    const logoSvg = `<svg class="logo-icon" width="18" height="18" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg"><rect x="1" y="12" width="4" height="7" rx="1" fill="currentColor"/><rect x="8" y="7" width="4" height="12" rx="1" fill="currentColor"/><rect x="15" y="3" width="4" height="16" rx="1" fill="currentColor"/><polyline points="3,12 10,7 17,3" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" opacity="0.4"/></svg>`;
+
     const mobileNavTabs = [
       { key: 'core',       label: 'News',    icon: '<svg viewBox="0 0 24 24"><path d="M4 22h16a2 2 0 002-2V4a2 2 0 00-2-2H8a2 2 0 00-2 2v16a2 2 0 01-2 2zm0 0a2 2 0 01-2-2v-9c0-1.1.9-2 2-2h2"/><path d="M18 14h-8M15 18h-5M10 6h8v4h-8z"/></svg>' },
       { key: 'markets',    label: 'Markets', icon: '<svg viewBox="0 0 24 24"><polyline points="22 7 13.5 15.5 8.5 10.5 2 17"/><polyline points="16 7 22 7 22 13"/></svg>' },
@@ -145,7 +148,7 @@ export class PanelLayoutManager implements AppModule {
     this.ctx.container.innerHTML = `
       <div class="header mobile-header">
         <div class="header-left">
-          <span class="logo">FinSitch</span>
+          ${logoSvg}<span class="logo">FinSitch</span>
           <div class="status-indicator">
             <span class="status-dot"></span>
             <span>${t('header.live')}</span>
