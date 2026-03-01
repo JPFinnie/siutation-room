@@ -40,24 +40,6 @@
   --text-muted: #3d5069;
 }
 
-/* ---------- Light mode refinements ---------- */
-[data-theme="light"] {
-  --bg: #f4f5f7;
-  --bg-secondary: #ebedf0;
-  --surface: #ffffff;
-  --surface-hover: #f7f8fa;
-  --surface-active: #eef0f4;
-  --panel-bg: #ffffff;
-  --panel-border: #dde1e9;
-  --border: #dde1e9;
-  --border-strong: #c5cad4;
-  --border-subtle: #edf0f5;
-  --text: #1a202c;
-  --text-secondary: #2d3748;
-  --text-dim: #4a5568;
-  --text-muted: #718096;
-}
-
 /* ---------- Base typography ---------- */
 body {
   font-family: var(--font-sans);
@@ -222,27 +204,6 @@ body {
   color: var(--text-dim);
 }
 
-/* Theme toggle button */
-.theme-toggle-btn {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: 32px;
-  height: 32px;
-  background: transparent;
-  border: 1px solid var(--border);
-  border-radius: 6px;
-  color: var(--text-dim);
-  cursor: pointer;
-  transition: background 0.15s, border-color 0.15s, color 0.15s;
-}
-
-.theme-toggle-btn:hover {
-  background: var(--surface-hover);
-  border-color: var(--border-strong);
-  color: var(--text);
-}
-
 /* Fullscreen button */
 .fullscreen-btn {
   display: flex;
@@ -263,6 +224,12 @@ body {
   background: var(--surface-hover);
   border-color: var(--border-strong);
   color: var(--text);
+}
+
+.fullscreen-btn.active {
+  background: var(--accent-ui-dim);
+  border-color: var(--accent-ui-border);
+  color: var(--accent-ui);
 }
 
 /* ---------- Sidebar ---------- */
@@ -504,21 +471,9 @@ body {
   box-shadow: 0 4px 14px rgba(0, 0, 0, 0.3), 0 0 0 1px var(--border-strong);
 }
 
-[data-theme="light"] .panel {
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.06), 0 0 0 1px var(--panel-border);
-}
-
-[data-theme="light"] .panel:hover {
-  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.1), 0 0 0 1px var(--border-strong);
-}
-
 /* ---------- Panel cards — gradient background ---------- */
 .panel {
   background: linear-gradient(180deg, var(--surface) 0%, #080f1c 100%);
-}
-
-[data-theme="light"] .panel {
-  background: var(--surface);
 }
 
 /* ---------- Panel header ---------- */
@@ -529,11 +484,6 @@ body {
   border-top: 2px solid rgba(59, 130, 246, 0.35);
   border-left: none;
   border-radius: var(--panel-radius) var(--panel-radius) 0 0;
-}
-
-[data-theme="light"] .panel-header {
-  background: var(--surface);
-  border-top-color: rgba(59, 130, 246, 0.5);
 }
 
 .panel-header-left {
@@ -710,13 +660,6 @@ body {
 
 .header.mobile-header .logo {
   font-size: 14px;
-}
-
-/* Light mode mobile nav */
-[data-theme="light"] .mobile-bottom-nav {
-  background: #ffffff;
-  border-top-color: var(--border);
-  box-shadow: 0 -1px 8px rgba(0, 0, 0, 0.08);
 }
 
 /* ---------- Settings — About / Fork block ---------- */
