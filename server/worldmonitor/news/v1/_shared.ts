@@ -154,7 +154,7 @@ export function getProviderCredentials(provider: string): ProviderCredentials | 
   if (provider === 'ollama') {
     const baseUrl = process.env.OLLAMA_API_URL;
     if (!baseUrl) return null;
-    const headers: Record<string, string> = { 'Content-Type': 'application/json' };
+    const headers: Record<string, string> = { 'Content-Type': 'application/json', 'ngrok-skip-browser-warning': 'true' };
     const apiKey = process.env.OLLAMA_API_KEY;
     if (apiKey) {
       headers['Authorization'] = `Bearer ${apiKey}`;

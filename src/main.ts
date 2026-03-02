@@ -1,6 +1,11 @@
 import './styles/base-layer.css';
 import './styles/modern-ui.css';
 import { App } from './App';
+import { inject as injectAnalytics } from '@vercel/analytics';
+import { injectSpeedInsights } from '@vercel/speed-insights';
+
+injectAnalytics();
+injectSpeedInsights();
 
 // Suppress unhandled rejections from autoplay policy etc.
 window.addEventListener('unhandledrejection', (e) => {
