@@ -2,7 +2,7 @@ import type { Metadata } from 'next';
 import './globals.css';
 
 export const metadata: Metadata = {
-  title:       "Investor's Edge — Your highest-leverage financial action",
+  title:       'Nexus Edge — Your highest-leverage financial action',
   description: 'AI-powered portfolio analysis for self-directed investors. One ranked recommendation each month, backed by deterministic maths.',
 };
 

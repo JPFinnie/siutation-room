@@ -165,7 +165,7 @@ export default function PortfolioForm({ onAnalyze }: Props) {
         <div>
           <h2 className="text-lg font-bold text-gray-800">Enter Your Portfolio</h2>
           <p className="text-sm text-gray-500">
-            Use data from your CIBC Investor&apos;s Edge account
+            Use data from your CIBC Investor's Edge account
           </p>
         </div>
         <button

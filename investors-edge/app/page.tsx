@@ -18,10 +18,10 @@ function Header() {
             className="w-9 h-9 rounded-lg flex items-center justify-center font-bold text-sm"
             style={{ backgroundColor: '#C8973A', color: '#0B1A40' }}
           >
-            IE
+            NE
           </div>
           <div>
-            <p className="font-bold text-base leading-tight">Investor&apos;s Edge</p>
+            <p className="font-bold text-base leading-tight">Nexus Edge</p>
             <p className="text-xs opacity-60">for CIBC Investor&apos;s Edge users</p>
           </div>
         </div>
