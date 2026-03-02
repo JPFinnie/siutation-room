@@ -27,6 +27,8 @@ export interface PortfolioInput {
   rrspRoomRemaining: number;
   riskTolerance: RiskTolerance;
   annualContribution: number;
+  annualIncome?: number;
+  monthlyExpenses?: number;
   goal: {
     targetAmount: number;
     yearsToGoal: number;
@@ -63,6 +65,19 @@ export interface PortfolioMetrics {
     unrealizedLoss: number;
     lossPercent: number;
   }>;
+  savingsRate: number | null;
+  liquidityRatio: number | null;
+}
+
+export interface ChatMessage {
+  role: 'user' | 'assistant';
+  content: string;
+}
+
+export interface ChatRequest {
+  analysis: AnalysisResult;
+  portfolio: PortfolioInput;
+  messages: ChatMessage[];
 }
 
 export interface ScoredAction {

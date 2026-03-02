@@ -5,6 +5,7 @@ import PortfolioForm     from '@/components/PortfolioForm';
 import RecommendationCard from '@/components/RecommendationCard';
 import ScenarioChart     from '@/components/ScenarioChart';
 import LoadingState      from '@/components/LoadingState';
+import ChatPanel         from '@/components/ChatPanel';
 import { PortfolioInput, AnalysisResult } from '@/lib/types';
 
 // ─── Header ─────────────────────────────────────────────────────────────────
@@ -44,6 +45,16 @@ function MetricBar({ metrics }: { metrics: AnalysisResult['metrics'] }) {
   const gainColor = metrics.unrealizedGainLoss >= 0 ? 'text-green-600' : 'text-red-600';
   const gainSign  = metrics.unrealizedGainLoss >= 0 ? '+' : '';
 
+  const savingsRateColor =
+    metrics.savingsRate === null ? '' :
+    metrics.savingsRate >= 0.20  ? 'text-green-600' :
+    metrics.savingsRate >= 0.10  ? 'text-amber-600' : 'text-red-600';
+
+  const liquidityColor =
+    metrics.liquidityRatio === null ? '' :
+    metrics.liquidityRatio >= 6  ? 'text-green-600' :
+    metrics.liquidityRatio >= 3  ? 'text-amber-600' : 'text-red-600';
+
   return (
     <div className="card p-4 fade-up">
       <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 text-center">
@@ -75,6 +86,40 @@ function MetricBar({ metrics }: { metrics: AnalysisResult['metrics'] }) {
           </p>
         </div>
       </div>
+
+      {/* Financial health row — only shown when income/expenses provided */}
+      {(metrics.savingsRate !== null || metrics.liquidityRatio !== null) && (
+        <div className="grid grid-cols-2 gap-4 text-center mt-4 pt-4 border-t border-gray-100">
+          {metrics.savingsRate !== null && (
+            <div>
+              <p className="text-xs text-gray-400 mb-1">Savings Rate</p>
+              <p className={`text-lg font-bold ${savingsRateColor}`}>
+                {(metrics.savingsRate * 100).toFixed(1)}%
+                <span className="text-xs font-normal text-gray-400 ml-1">of income</span>
+              </p>
+              <p className="text-xs text-gray-400">
+                {metrics.savingsRate >= 0.20 ? 'Excellent (20%+ target)' :
+                 metrics.savingsRate >= 0.10 ? 'Moderate — aim for 20%' :
+                 'Below 10% — review expenses'}
+              </p>
+            </div>
+          )}
+          {metrics.liquidityRatio !== null && (
+            <div>
+              <p className="text-xs text-gray-400 mb-1">Emergency Fund</p>
+              <p className={`text-lg font-bold ${liquidityColor}`}>
+                {metrics.liquidityRatio.toFixed(1)}
+                <span className="text-xs font-normal text-gray-400 ml-1">months</span>
+              </p>
+              <p className="text-xs text-gray-400">
+                {metrics.liquidityRatio >= 6 ? 'Fully funded (6-month target)' :
+                 metrics.liquidityRatio >= 3 ? 'Adequate — target 6 months' :
+                 'Below 3-month minimum'}
+              </p>
+            </div>
+          )}
+        </div>
+      )}
     </div>
   );
 }
@@ -169,6 +214,11 @@ export default function HomePage() {
               goalAmount={portfolio?.goal.targetAmount ?? 0}
               yearsToGoal={portfolio?.goal.yearsToGoal ?? (result.scenarios[0]?.yearByYearValues.length - 1)}
             />
+
+            {/* Chat */}
+            {portfolio && (
+              <ChatPanel analysis={result} portfolio={portfolio} />
+            )}
 
             {/* Reset */}
             <div className="text-center pb-8">

@@ -20,6 +20,8 @@ interface FormState {
   rrspRoom:            string;
   riskTolerance:       RiskTolerance;
   annualContribution:  string;
+  annualIncome:        string;
+  monthlyExpenses:     string;
   goalAmount:          string;
   goalYears:           string;
   goalDescription:     string;
@@ -55,6 +57,8 @@ const DEMO: FormState = {
   rrspRoom:             '32000',
   riskTolerance:        'growth',
   annualContribution:   '12000',
+  annualIncome:         '85000',
+  monthlyExpenses:      '5200',
   goalAmount:           '800000',
   goalYears:            '18',
   goalDescription:      'Financial independence fund',
@@ -69,6 +73,8 @@ const BLANK_FORM: FormState = {
   rrspRoom:             '',
   riskTolerance:        'balanced',
   annualContribution:   '',
+  annualIncome:         '',
+  monthlyExpenses:      '',
   goalAmount:           '',
   goalYears:            '',
   goalDescription:      '',
@@ -143,6 +149,8 @@ export default function PortfolioForm({ onAnalyze }: Props) {
       rrspRoomRemaining:   parseFloat(form.rrspRoom)           || 0,
       riskTolerance:       form.riskTolerance,
       annualContribution:  parseFloat(form.annualContribution) || 0,
+      ...(form.annualIncome    && { annualIncome:    parseFloat(form.annualIncome)    }),
+      ...(form.monthlyExpenses && { monthlyExpenses: parseFloat(form.monthlyExpenses) }),
       goal: {
         targetAmount: goalAmount,
         yearsToGoal:  goalYears,
@@ -305,6 +313,32 @@ export default function PortfolioForm({ onAnalyze }: Props) {
               min="0"
               value={form.rrspRoom}
               onChange={e => setForm(f => ({ ...f, rrspRoom: e.target.value }))}
+              className={inputClass}
+            />
+          </div>
+          <div>
+            <label className="text-xs text-gray-500 block mb-1">
+              Gross Annual Income ($) <span className="text-gray-400">(optional)</span>
+            </label>
+            <input
+              placeholder="85,000"
+              type="number"
+              min="0"
+              value={form.annualIncome}
+              onChange={e => setForm(f => ({ ...f, annualIncome: e.target.value }))}
+              className={inputClass}
+            />
+          </div>
+          <div>
+            <label className="text-xs text-gray-500 block mb-1">
+              Monthly Expenses ($) <span className="text-gray-400">(optional)</span>
+            </label>
+            <input
+              placeholder="5,200"
+              type="number"
+              min="0"
+              value={form.monthlyExpenses}
+              onChange={e => setForm(f => ({ ...f, monthlyExpenses: e.target.value }))}
               className={inputClass}
             />
           </div>

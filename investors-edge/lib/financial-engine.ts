@@ -95,6 +95,16 @@ export function computeMetrics(portfolio: PortfolioInput): PortfolioMetrics {
     }))
     .sort((a, b) => b.unrealizedLoss - a.unrealizedLoss);
 
+  const monthlyIncome = portfolio.annualIncome ? portfolio.annualIncome / 12 : null;
+  const savingsRate =
+    monthlyIncome && portfolio.monthlyExpenses
+      ? Math.max(0, (monthlyIncome - portfolio.monthlyExpenses) / monthlyIncome)
+      : null;
+  const liquidityRatio =
+    portfolio.monthlyExpenses && portfolio.monthlyExpenses > 0
+      ? cashBalance / portfolio.monthlyExpenses
+      : null;
+
   return {
     totalValue,
     investedValue,
@@ -108,6 +118,8 @@ export function computeMetrics(portfolio: PortfolioInput): PortfolioMetrics {
     concentrationRisk,
     mostConcentratedHolding,
     positionsInLoss,
+    savingsRate,
+    liquidityRatio,
   };
 }
 
